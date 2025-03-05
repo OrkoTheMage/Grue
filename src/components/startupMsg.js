@@ -1,6 +1,6 @@
 "use client"
 
-  const ascii = `
+const ascii = `
   ▄██████▄     ▄████████ ███    █▄     ▄████████ 
   ███    ███   ███    ███ ███    ███   ███    ███ 
   ███    █▀    ███    ███ ███    ███   ███    █▀  
@@ -10,58 +10,67 @@
   ███    ███   ███    ███ ███    ███   ███    ███ 
   ████████▀    ███    ███ ████████▀    ██████████ 
                ███    ███                         
-  `
+`
 
 export const startupMsg = (setLogs) => {
-      const messages = [
-        "Welcome user,",
-        "It is pitch black...",
-        "You are likely to be eaten by a..."
-      ]
+  const messages = [
+    "Welcome user,",
+    "It is pitch black...",
+    "You are likely to be eaten by a..."
+  ]
 
-      const finalMessages = [
-        <div key="ascii" className="ascii-text">{ascii}</div>,
-        "-------------------------------------------------",
-        "■ Use 'ls' to list available files in a directory.",
-        "■ Use 'cd <directory>' to change directories.",
-        "■ Use 'run <game>' to launch a game.",
-        "■ Please register or log in.",
-        "■ Type 'help' for more information.",
-      ]
+  const finalMessages = [
+    <div key="ascii" className="ascii-text">{ascii}</div>,
+    "-------------------------------------------------",
+    "■ Use 'ls' to list available files in a directory.",
+    "■ Use 'cd <directory>' to change directories.",
+    "■ Use 'run <game>' to launch a game.",
+    "■ Please register or log in.",
+    "■ Type 'help' for more information.",
+  ]
 
-      let currentIndex = 0
+  let currentIndex = 0
 
-      const typeMessage = (message, callback) => {
-        let charIndex = 0
+  const typeMessage = (message, callback) => {
+    let charIndex = 0
 
-        setLogs(prevLogs => [...prevLogs, ""])
+    setLogs(prevLogs => [...prevLogs, ""])
 
-        const interval = setInterval(() => {
-          setLogs(prevLogs => {
-            let updatedLogs = [...prevLogs]
-            updatedLogs[currentIndex] = message.slice(0, charIndex + 1)
-            return updatedLogs
-          })
+    const interval = setInterval(() => {
+      setLogs(prevLogs => {
+        let updatedLogs = [...prevLogs]
+        updatedLogs[currentIndex] = message.slice(0, charIndex + 1)
+        return updatedLogs
+      })
 
-          charIndex++
+      charIndex++
 
-          if (charIndex === message.length) {
-            clearInterval(interval)
-            setTimeout(callback, 300)
-          }
-        }, 50) // Typing speed
+      if (charIndex === message.length) {
+        clearInterval(interval)
+        setTimeout(callback, 300)
       }
+    }, 50) // Typing speed
+  }
 
-      const typeNextMessage = () => {
-        if (currentIndex < messages.length) {
-          typeMessage(messages[currentIndex], () => {
-            currentIndex++
-            typeNextMessage()
-          })
-        } else {
-          setLogs(prevLogs => [...prevLogs, ...finalMessages])
+  const typeNextMessage = () => {
+    if (currentIndex < messages.length) {
+      typeMessage(messages[currentIndex], () => {
+        currentIndex++
+        typeNextMessage()
+      })
+    } else {
+      setLogs(prevLogs => [...prevLogs, ...finalMessages])
+
+      // Delay the fade-in effect after the ASCII art has been rendered
+      setTimeout(() => {
+        const asciiElement = document.querySelector('.ascii-text')
+        if (asciiElement) {
+          // Trigger the fade-in by adding the class
+          asciiElement.classList.add('fade-in')
         }
-      }
-
-      return typeNextMessage
+      }, 100) // Adding a slight delay to allow React to render the ASCII element
     }
+  }
+
+  return typeNextMessage
+}
