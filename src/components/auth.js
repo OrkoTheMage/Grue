@@ -3,7 +3,7 @@ export const registerUser = async (args, displayMsg) => {
   const password = args[1]
 
   try {
-    const response = await fetch('/api/register', {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -30,7 +30,7 @@ export const loginUser = async (args, displayMsg, setCurrentUser) => {
   const password = args[1]
 
   try {
-    const response = await fetch('/api/login', {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
