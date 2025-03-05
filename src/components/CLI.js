@@ -13,21 +13,22 @@ export default function CLI() {
   const [historyIndex, setHistoryIndex] = useState(-1)
   const [currentUser, setCurrentUser] = useState(null)
   const [currentDir, setCurrentDir] = useState("/")
-
   const logsEndRef = useRef(null)
+
+  // Display startup message
   useEffect(() => {
     const typeNextMessage = startupMsg(setLogs)
-    typeNextMessage(() => {})  // Start the typing animation
+    typeNextMessage(() => {}) 
   }, [])
 
+  // Scroll to the bottom of the logs
     useEffect(() => {
       logsEndRef.current?.scrollIntoView({ behavior: "smooth" })
     }, [logs])
-
+    
     const displayMsg = (msg) => {
       setLogs(prev => [...prev, msg])
     }
-  
   
   const handleCommand = (event) => {
     if (event.key === "Enter" && input.trim()) {
@@ -123,8 +124,20 @@ export default function CLI() {
         case "hello":
         case "hi":
         case "hey": 
-          const randomeGreetings = ["Hello! How can I help you today?", "Hi! What can I do for you?", "Hey! What's up?"]
-          displayMsg(randomeGreetings[Math.floor(Math.random() * randomeGreetings.length)])
+        const greetings = [
+          "Hey there! Roll a dice, flip a coin, or ask the magic8ball!",
+          "Hello, adventurer! Want to try your luck with a dice roll?",
+          "Yo! Will it be heads or tails in your coin flip?",
+          "Howdy! Say the secret word 'xyzzy' for a surprise!",
+          "Ah, brave traveler, you've arrived. What's your next move?",
+          "Greetings, wanderer! What adventure shall we embark on today?",
+          "Hello, hero! The world awaits — what will you do now?",
+          "Hey, adventurer! The journey is yours to shape — what's next?",
+          "Welcome, traveler! Ready to explore the unknown?",
+          "Ah, a new face! What's your first quest on this fine day?"
+        ]
+        const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)]
+        displayMsg(randomGreeting)
           break
 
           case "time":
@@ -160,37 +173,37 @@ export default function CLI() {
  
           case "coinflip":
           const coin = Math.random() < 0.5 ? "Heads" : "Tails"
-          displayMsg(coin)
+          displayMsg(`Flipping coin... It's ${coin}!`)
           break
 
           case "d20":
-          const roll = Math.floor(Math.random() * 20) + 1
-          displayMsg(`You rolled a ${roll}`)
+          const rollD20 = Math.floor(Math.random() * 20) + 1
+          displayMsg(`Rolling a d20... You got a ${rollD20}!`)
           break
 
           case "d12":
           const rollD12 = Math.floor(Math.random() * 12) + 1
-          displayMsg(`You rolled a ${rollD12}`)
+          displayMsg(`Rolling a d12... You got a ${rollD12}!`)
           break
 
           case "d10":
           const rollD10 = Math.floor(Math.random() * 10) + 1
-          displayMsg(`You rolled a ${rollD10}`)
+          displayMsg(`Rolling a d10... You got a ${rollD10}!`)
           break
 
           case "d8":
           const rollD8 = Math.floor(Math.random() * 8) + 1
-          displayMsg(`You rolled a ${rollD8}`)
+          displayMsg(`Rolling a d8... You got a ${rollD8}!`)
           break
 
           case "d6":
           const rollD6 = Math.floor(Math.random() * 6) + 1
-          displayMsg(`You rolled a ${rollD6}`)
+          displayMsg(`Rolling a d6... You got a ${rollD6}!`)
           break
 
           case "d4":
           const rollD4 = Math.floor(Math.random() * 4) + 1
-          displayMsg(`You rolled a ${rollD4}`)
+          displayMsg(`Rolling a d4... You got a ${rollD4}!`)
           break
 
           case "joke":
@@ -198,6 +211,13 @@ export default function CLI() {
             .then(res => res.json())
             .then(data => displayMsg(`${data.setup} - ${data.punchline}`))
             .catch(() => displayMsg("Error fetching joke."))
+          break
+
+          case "passwordgen":
+            const length = args[0] ? parseInt(args[0]) : 12
+            const password = Array.from({ length }, () => String.fromCharCode(Math.floor(Math.random() * 93) + 33)).join("")
+            displayMsg(`Generated password: ${password}`)
+            displayMsg("Use it wisely!")
           break
   
         // Exit command
@@ -211,6 +231,7 @@ export default function CLI() {
         case "reload":
         case "refresh":
         case "reboot":
+        case "reset":
           window.location.reload()
           break
   
@@ -224,6 +245,22 @@ export default function CLI() {
       setCommandHistory([...commandHistory, input.trim()])
       setHistoryIndex(commandHistory.length)
       setInput("")
+    }
+    
+    // Handle ArrowUp and ArrowDown key navigation through command history
+    if (event.key === "ArrowUp") {
+      if (historyIndex > 0) {
+        setHistoryIndex(historyIndex - 1)
+        setInput(commandHistory[historyIndex - 1])
+      }
+    } else if (event.key === "ArrowDown") {
+      if (historyIndex < commandHistory.length - 1) {
+        setHistoryIndex(historyIndex + 1)
+        setInput(commandHistory[historyIndex])
+      } else {
+        setHistoryIndex(commandHistory.length)
+        setInput("")
+      }
     }
   }
 

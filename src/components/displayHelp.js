@@ -64,6 +64,9 @@ export const displayHelpMore = (setLogs) => {
       <span className="text-blue-500">joke</span> <span>{"- Tell a joke"}</span>
     </>,
     <>
+      <span className="text-blue-500">passwordgen</span> <span>{"- Generate a password"}</span>
+    </>,
+    <>
       <span className="text-blue-500">...</span> <span>{"and more to discover!"}</span>
     </>,
   ])

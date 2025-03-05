@@ -22,7 +22,7 @@ export const listDirectory = (currentDir, setLogs) => {
 
 export const changeDirectory = (args, currentDir, setCurrentDir, setLogs) => {
   const dir = args[0]
-  
+
   if (!dir || dir === "cd") {
     setCurrentDir("/")
   } else if (dir === "..") {
@@ -32,11 +32,22 @@ export const changeDirectory = (args, currentDir, setCurrentDir, setLogs) => {
     }
   } else {
     const newPath = currentDir === "/" ? `/${dir}` : `${currentDir}/${dir}`
-    
+
     if (fileSystem[newPath]) {
       setCurrentDir(newPath)
     } else if (currentDir === "/contact" && dir.toLowerCase() === "resume") {
-      window.open("https://drive.google.com/file/d/1XuhPuQzuN8jNntMIOXAaqMQYS8f8B_tn/view?usp=sharing", "_blank")
+      setLogs(prev => [
+        ...prev,
+        <div key="resume" className="pdf-container">
+          <iframe 
+            src="https://drive.google.com/file/d/1XuhPuQzuN8jNntMIOXAaqMQYS8f8B_tn/preview"
+            width="100%"
+            height="900px"
+            title="Resume PDF"
+            frameBorder="0"
+          ></iframe>
+        </div>
+      ])
     } else if (currentDir === "/contact" && dir.toLowerCase() === "github") {
       window.open("https://github.com/OrkoTheMage", "_blank")
     } else {

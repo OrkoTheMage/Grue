@@ -18,7 +18,6 @@ const CRTAnimation = () => {
     return () => clearInterval(interval)
   }, [])
 
-  const randomOpacity = Math.random() * 0.1 + 0.85
 
   return (
     <div className="crt-container">
@@ -27,7 +26,6 @@ const CRTAnimation = () => {
         className="crt-h-line"
         style={{
           top: `${linePosition}px`,
-          opacity: randomOpacity,
         }}
       />
     </div>
