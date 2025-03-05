@@ -29,8 +29,6 @@ export const loginUser = async (args, displayMsg, setCurrentUser) => {
   const name = args[0]
   const password = args[1]
 
-  console.log('displayMsg:', displayMsg)
-
   try {
     const response = await fetch('/api/login', {
       method: 'POST',
@@ -54,4 +52,27 @@ export const loginUser = async (args, displayMsg, setCurrentUser) => {
     displayMsg("Error: Login failed.")
     console.error("Login error:", error)
   }
+}
+
+export const updateUserStats = async (currentUser, stats) => {
+  const response = await fetch("/api/updateUserStats", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      name: currentUser,
+      ...stats,
+    }),
+  })
+
+console.log("stats", stats)
+
+  if (!response.ok) {
+    console.error("Failed to update user stats.")
+    return null
+  }
+
+  const data = await response.json()
+  return data // Returns the updated user stats from the server
 }
