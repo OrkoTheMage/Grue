@@ -1,35 +1,18 @@
+const fileSystem = {
+  '/': ['games', 'projects', 'contact'],
+  '/games': ['In-Between', 'Sigil-The-City-of-Doors'],
+  '/contact': ['Resume', 'GitHub'],
+  '/projects': []
+}
+
 export const listDirectory = (currentDir, setLogs) => {
-  if (currentDir === "/") {
+  if (fileSystem[currentDir]) {
     setLogs(prev => [
       ...prev,
       <div>
-        <span className="text-blue-500 mr-4">games</span>
-        <span className="text-blue-500 mr-4">projects</span>
-        <span className="text-blue-500">con</span>
-      </div>
-    ])
-  } else if (currentDir === "/games") {
-    setLogs(prev => [
-      ...prev,
-      <div>
-        <a
-          href="https://homies-llc.github.io/In-Between/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-500"
-        >
-          In Between
-        </a>
-      </div>,
-      <div>
-        <a
-          href="https://orkothemage.github.io/Sigil-The-City-of-Doors/sigil.html"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-500"
-        >
-          Sigil: The Doors
-        </a>
+        {fileSystem[currentDir].map((item, index) => (
+          <span key={index} className="text-blue-500 mr-4">{item}</span>
+        ))}
       </div>
     ])
   } else {
@@ -37,17 +20,27 @@ export const listDirectory = (currentDir, setLogs) => {
   }
 }
 
-export const changeDirectory = (dir, currentDir, setCurrentDir, setLogs) => {
-  if (dir === "games" && currentDir === "/") {
-    setCurrentDir("/games")
-  } else if (dir === "resume" && currentDir === "/") {
-window.open("https://drive.google.com/file/d/1XuhPuQzuN8jNntMIOXAaqMQYS8f8B_tn/view?usp=sharing", "_blank")
-  } else if (dir === "github" && currentDir === "/") {
-    window.open("https://github.com/OrkoTheMage", "_blank")
-}
-  else if (dir === ".." && currentDir === "/games") {
+export const changeDirectory = (args, currentDir, setCurrentDir, setLogs) => {
+  const dir = args[0]
+  
+  if (!dir || dir === "cd") {
     setCurrentDir("/")
+  } else if (dir === "..") {
+    if (currentDir !== "/") {
+      const parentDir = currentDir.substring(0, currentDir.lastIndexOf("/")) || "/"
+      setCurrentDir(parentDir)
+    }
   } else {
-    setLogs(prev => [...prev,`Directory '${dir}' not found.` ])
+    const newPath = currentDir === "/" ? `/${dir}` : `${currentDir}/${dir}`
+    
+    if (fileSystem[newPath]) {
+      setCurrentDir(newPath)
+    } else if (currentDir === "/contact" && dir.toLowerCase() === "resume") {
+      window.open("https://drive.google.com/file/d/1XuhPuQzuN8jNntMIOXAaqMQYS8f8B_tn/view?usp=sharing", "_blank")
+    } else if (currentDir === "/contact" && dir.toLowerCase() === "github") {
+      window.open("https://github.com/OrkoTheMage", "_blank")
+    } else {
+      setLogs(prev => [...prev, `Directory '${dir}' not found.`])
+    }
   }
 }

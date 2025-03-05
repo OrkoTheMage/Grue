@@ -78,7 +78,7 @@ export default function CLI() {
           listDirectory(currentDir, setLogs)
           break
         case "cd":
-          changeDirectory(args[0], currentDir, setCurrentDir, setLogs)
+          changeDirectory(args, currentDir, setCurrentDir, setLogs)
           break
   
         // Game-related commands
@@ -98,7 +98,6 @@ export default function CLI() {
   
                 const gameName = args[0].toLowerCase()
                 switch (gameName) {
-                  case "in between":
                   case "inbetween":
                   case "in-between":
                     window.open("https://homies-llc.github.io/In-Between/", "_blank")
