@@ -1,7 +1,7 @@
 Welcome user,
 It is pitch black...
 You are likely to be eaten by a...
-
+```sh
   ▄██████▄     ▄████████ ███    █▄     ▄████████ 
   ███    ███   ███    ███ ███    ███   ███    ███ 
   ███    █▀    ███    ███ ███    ███   ███    █▀  
@@ -10,9 +10,8 @@ You are likely to be eaten by a...
   ███    ███ ▀███████████ ███    ███   ███    █▄  
   ███    ███   ███    ███ ███    ███   ███    ███ 
   ████████▀    ███    ███ ████████▀    ██████████ 
-
-  # Grue - The CLI Personal Website
-
+               ███    ███                 
+```                       
 **Grue** is a command-line interface (CLI) based personal website and portfolio for **OrkoTheMage**. It serves as a unique way to showcase projects, games, and a professional resume in an interactive terminal experience. Inspired by classic text-based adventure games, **Grue** offers a nostalgic yet functional way to explore OrkoTheMage's work.
 
 ## Features
