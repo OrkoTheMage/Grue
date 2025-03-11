@@ -28,9 +28,12 @@ Once launched, the CLI provides an interactive prompt. Use commands to navigate 
 
 ```sh
 help          # List available commands
-resume        # View OrkoTheMage's resume
-projects      # See the portfolio of games & software
-run [game]    # Try out a featured game
+register      # Register a new user
+login         # Log in to an existing account
+stats         # View your activity statistics
+ls, cd        # Directory/File commands
+cat, echo     # More commands
+run           # Launch a game
 ```
 
 ## Technology Stack
