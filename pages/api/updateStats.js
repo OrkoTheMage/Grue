@@ -1,10 +1,12 @@
 import { MongoClient } from 'mongodb'
 
 export default async function handler(req, res) {
+  // Inital error checking
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
+  // No username or stat type error checking
   try {
     const { username, statType } = req.body
     
@@ -25,6 +27,7 @@ export default async function handler(req, res) {
       'secretsFound': 'secretsFound'
     }
     
+    // Check if the stat type is valid
     if (!validStats[statType]) {
       await client.close()
       return res.status(400).json({ error: "Invalid stat type" })
@@ -42,10 +45,12 @@ export default async function handler(req, res) {
     
     await client.close()
     
+    // Check if the user was found
     if (result.matchedCount === 0) {
       return res.status(404).json({ error: "User not found" })
     }
     
+    // Return success
     return res.status(200).json({ success: true })
   } catch (error) {
     console.error('Error updating user stats:', error)

@@ -6,21 +6,17 @@ export const clearLogs = (setLogs, setInput) => {
 export const animateDotsWithMessage = (message, maxDots, setLogs, callback) => {
   let dotCount = 0
   
-  // Store the initial log length to know where our animation starts
   let initialLogPosition = null
   
   const animate = () => {
-    // Build the message with the current number of dots
     const dotsMessage = `${message}${'.'.repeat(dotCount + 1)}`
     
     if (initialLogPosition === null) {
-      // First execution - add the message to logs and store its position
       setLogs(prev => {
         initialLogPosition = prev.length
         return [...prev, dotsMessage]
       })
     } else {
-      // Update the existing message with new dots
       setLogs(prev => {
         const newLogs = [...prev]
         newLogs[initialLogPosition] = dotsMessage
@@ -29,14 +25,11 @@ export const animateDotsWithMessage = (message, maxDots, setLogs, callback) => {
     }
     
     if (dotCount < maxDots - 1) {
-      // Continue animation
       dotCount++
       setTimeout(animate, 500)
     } else {
-      // Animation complete, clear the message and run callback
       setLogs(prev => {
         const newLogs = [...prev]
-        // Remove the animation message when complete
         newLogs.splice(initialLogPosition, 1)
         return newLogs
       })
@@ -82,7 +75,6 @@ export const createIframe = (key, src, title) => {
   )
 }
 
-
 export const exitCli = (setLogs, setInput, setCurrentUser, currentUser) => {
   if (!currentUser) {
     setLogs(prev => [...prev, "You are not currently logged in."])
@@ -94,11 +86,11 @@ export const exitCli = (setLogs, setInput, setCurrentUser, currentUser) => {
     setInput("")
     setLogs(prev => [
       ...prev,
-      "Logged out successfully.",
+      "Logged out successfully."
     ])
 
     animateDotsWithMessage("Restarting", 6, setLogs, () => {
-        window.location.reload()
+      window.location.reload()
     })
   })
 }
