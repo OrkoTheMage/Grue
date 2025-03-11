@@ -14,14 +14,15 @@ export const displayHelp = (setLogs) => {
   const mainCommands = [
     { command: "register", description: "<username> <password> - Register a new user" },
     { command: "login", description: "<username> <password> - Log in to an existing account" },
+    { command: "stats", description: "- View your activity statistics" },
     { command: "ls", description: "- List files in the current directory" },
     { command: "cd", description: "<directory> - Change the current directory" },
+    { command: "cat", description: "<filename> - Display the contents of a file" },
+    { command: "echo", description: "<text> - Print text to the terminal" },
     { command: "run", description: "<game> - Launch a game" },
-    { command: "whoami", description: "- Display the current user" },
-    { command: "whoareyou", description: "- Learn more about me" },
-    { command: "stats", description: "- View your activity statistics" },
     { command: "clear", description: "- Clear the terminal logs" },
-    { command: "exit", description: "- Log out of the current account" },
+    { command: "logout", description: "- Log out of the current account" },
+    { command: "reboot", description: "- Restart the terminal" },
     { command: "helpmore", description: "- Show more commands" },
     { command: "help", description: "- Show this helpful message" },
   ];
@@ -33,6 +34,8 @@ export const displayHelp = (setLogs) => {
 export const displayHelpMore = (setLogs) => {
   const moreCommands = [
     { command: "hello", description: "- Greet me!" },
+    { command: "whoami", description: "- Display the current user" },
+    { command: "whoareyou", description: "- Learn more about me" },
     { command: "time", description: "- Display the current date/time" },
     { command: "magic8ball", description: "- Ask the magic 8-ball a question" },
     { command: "coinflip", description: "- Flip a coin" },

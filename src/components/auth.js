@@ -65,12 +65,12 @@ export const updateUserStat = async (username, statType) => {
   if (!username) return false
   
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/updateStats`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/userStats`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ username, statType })
+      body: JSON.stringify({ operation: 'update', username, statType })
     })
     
     return response.ok
@@ -87,12 +87,12 @@ export const getUserStatistics = async (username, displayMsg) => {
   }
   
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/getUserStats`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/userStats`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ username })
+      body: JSON.stringify({ operation: 'get', username })
     })
     
     const data = await response.json()
@@ -106,6 +106,56 @@ export const getUserStatistics = async (username, displayMsg) => {
   } catch (error) {
     console.error("Error retrieving user stats:", error)
     displayMsg("Error retrieving stats")
+    return null
+  }
+}
+
+// New function to record a discovered secret
+export const recordDiscoveredSecret = async (username, secretName) => {
+  if (!username) return { success: false, reason: "Not logged in" }
+  
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/userStats`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ operation: 'discoverSecret', username, secretName })
+    })
+    
+    const data = await response.json()
+    return { 
+      success: response.ok, 
+      alreadyDiscovered: data.alreadyDiscovered || false 
+    }
+  } catch (error) {
+    console.error("Error recording discovered secret:", error)
+    return { success: false, reason: "API error" }
+  }
+}
+
+// New function to get all discovered secrets
+export const getDiscoveredSecrets = async (username) => {
+  if (!username) return null
+  
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/userStats`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ operation: 'getSecrets', username })
+    })
+    
+    const data = await response.json()
+    
+    if (!response.ok) {
+      return null
+    }
+    
+    return data.discoveredSecrets || {}
+  } catch (error) {
+    console.error("Error getting discovered secrets:", error)
     return null
   }
 }
