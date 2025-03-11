@@ -61,14 +61,12 @@ export const startupMsg = (setLogs) => {
     } else {
       setLogs(prevLogs => [...prevLogs, ...finalMessages])
 
-      // Delay the fade-in effect after the ASCII art has been rendered
       setTimeout(() => {
         const asciiElement = document.querySelector('.ascii-text')
         if (asciiElement) {
-          // Trigger the fade-in by adding the class
           asciiElement.classList.add('fade-in')
         }
-      }, 100) // Adding a slight delay to allow React to render the ASCII element
+      }, 100) // Adding a slight delay to allow React to render
     }
   }
 
