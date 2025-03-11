@@ -183,15 +183,16 @@ export default function CLI() {
               ? displayMsg("Usage: kill <PID>")
               : args[0] === "1337"
               ? (
-                displayMsg("You cannot kill the grue."),
-                displayMsg("the grue is eternal", 4, setLogs),
-                displayMsg("the grue is infinite", 4, setLogs),
-                displayMsg("the grue is...", 4, setLogs),
-                displayMsg("hungry", 4, setLogs),
-                displayMsg("You are eaten by the grue.")
+                displayMsg(<span className="text-red-500">You cannot kill the grue.</span>),
+                displayMsg(<>{`The grue is `}<span className="text-red-500">eternal</span></>),
+                displayMsg(<>{`the grue is `}<span className="text-red-500">infinite</span></>),
+                displayMsg("the grue is..."),
+                displayMsg(<span className="text-red-500">hungry</span>),
+                displayMsg("You are eaten by the grue."),
+                exitCli(setLogs)       
                 )
               : args[0] === "1338"
-              ? displayMsg("You cannot kill the virus. This is not a bug, it's a feature.")
+              ? displayMsg(<span className="text-red-500">You cannot kill the virus. This is not a bug, it's a feature.</span>)
               : displayMsg(`No process found with PID ${args[0]}`)
             break        
 

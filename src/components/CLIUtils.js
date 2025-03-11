@@ -1,5 +1,6 @@
 import React from 'react'
 import { getDiscoveredSecrets, recordDiscoveredSecret } from "./auth"
+import { set } from 'mongoose'
 
 export const clearLogs = (setLogs, setInput) => {
   setLogs([])
@@ -78,24 +79,12 @@ export const createIframe = (key, src, title) => {
   )
 }
 
-export const exitCli = (setLogs, setInput, setCurrentUser, currentUser) => {
-  if (!currentUser) {
-    setLogs(prev => [...prev, "You are not currently logged in."])
-    return
-  }
-
-  animateDotsWithMessage("Logging out", 4, setLogs, () => {
-    setCurrentUser(null)
-    setInput("")
-    setLogs(prev => [
-      ...prev,
-      "Logged out successfully."
-    ])
-
+export const exitCli = (setLogs) => {
+setTimeout(() => {
     animateDotsWithMessage("Restarting", 6, setLogs, () => {
       window.location.reload()
     })
-  })
+  }, 2000)
 }
 
 export const generatePrompt = (currentUser) => {
