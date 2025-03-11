@@ -1,9 +1,9 @@
 "use client"
-import { useEffect, useRef, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import { startupMsg } from "./startupMsg"
 import { displayHelp, displayHelpMore } from "./displayHelp"
 import { registerUser, loginUser } from "./auth"
-import { clearLogs, exitCli, generatePrompt } from "./CLIUtils"
+import { animateDotsWithMessage, clearLogs, createIframe, exitCli, generatePrompt } from "./CLIUtils"
 import { changeDirectory, listDirectory } from "./directoryUtils"
 
 export default function CLI() {
@@ -27,7 +27,11 @@ export default function CLI() {
     }, [logs])
     
     const displayMsg = (msg) => {
-      setLogs(prev => [...prev, msg])
+      if (React.isValidElement(msg)) {
+        setLogs(prev => [...prev, msg])
+      } else {
+        setLogs(prev => [...prev, String(msg)])
+      }
     }
   
   const handleCommand = (event) => {
@@ -83,38 +87,42 @@ export default function CLI() {
           break
   
         // Game-related commands
-        case "run":
-        case "open":
-          if (currentDir === "/games") {
-            // Show "Launching Game" and animate dots
-            displayMsg("Launching Game")
-  
-            let dotCount = 0
-            const interval = setInterval(() => {
-              dotCount += 1
-              displayMsg(`Launching Game${'.'.repeat(dotCount)}`)
-  
-              if (dotCount === 3) {
-                clearInterval(interval)
-  
-                const gameName = args[0].toLowerCase()
+          case "run":
+          case "open":
+              if (currentDir === "/games") {
+                const gameName = args[0]?.toLowerCase()
+                if (!gameName) {
+                  displayMsg("Usage: run <game-name>")
+                  break
+                }
+            
                 switch (gameName) {
                   case "inbetween":
                   case "in-between":
-                    window.open("https://homies-llc.github.io/In-Between/", "_blank")
+                    animateDotsWithMessage("Launching Game", 3, setLogs, () => {
+                      setLogs(prev => [
+                        ...prev,
+                        createIframe("inbetween", "https://homies-llc.github.io/In-Between/", "In Between")
+                      ])
+                    })
                     break
                   case "sigil":
-                  case "sigil the city of doors":
                   case "sigil-the-city-of-doors":
-                    window.open("https://orkothemage.github.io/Sigil-The-City-of-Doors/sigil.html", "_blank")
+                  case "sigilthecityofdoors":
+                    animateDotsWithMessage("Launching Game", 3, setLogs, () => {
+                      setLogs(prev => [
+                        ...prev,
+                        createIframe("sigil", "https://orkothemage.github.io/Sigil-The-City-of-Doors/sigil.html", "Sigil")
+                      ])
+                    })
                     break
                   default:
                     displayMsg(`No game found with the name "${args[0]}"`)
                 }
+              } else {
+                displayMsg("Games can only be run from the /games directory")
               }
-            }, 1000)
-          }
-          break
+              break
   
         // Fun commands
         case "xyzzy":
