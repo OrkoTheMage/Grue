@@ -1,10 +1,22 @@
 "use client"
 import React, { useEffect, useRef, useState } from "react"
-import { startupMsg } from "./startupMsg"
-import { displayHelp, displayHelpMore } from "./displayHelp"
-import { registerUser, loginUser, updateUserStat, getUserStatistics } from "./auth"
-import { animateDotsWithMessage, clearLogs, createIframe, exitCli, generatePrompt, loadUserSecrets, secretDiscovered } from "./CLIUtils"
-import { changeDirectory, listDirectory, catFile } from "./directoryUtils"
+import { 
+  animateDotsWithMessage, 
+  clearLogs,
+  createIframe, 
+  generatePrompt, 
+  loadUserSecrets, 
+  secretDiscovered, 
+  getGreetings, 
+  getMagic8BallResponses, 
+  stats, 
+  ps, 
+  kill 
+} from "../../utils/CLIUtils"
+import { changeDirectory, listDirectory, catFile } from "../../utils/directoryUtils"
+import { registerUser, loginUser, updateUserStat, } from "../../utils/auth"
+import { displayHelp, displayHelpMore } from "../../utils/displayHelp"
+import { startupMsg } from "../../utils/startupMsg"
 
 export default function CLI() {
   const [startupComplete, setStartupComplete] = useState(false)
@@ -92,21 +104,7 @@ export default function CLI() {
           break
 
         case "stats":
-          !currentUser 
-            ? displayMsg("You must be logged in to view your stats.")
-            : animateDotsWithMessage("Retrieving your stats", 4, setLogs, () => {
-                getUserStatistics(currentUser, displayMsg).then(stats => {
-                  stats && (
-                    displayMsg(<span className="text-blue-500">Your Statistics:</span>),
-                    displayMsg(`-------------------------------------------------`),
-                    displayMsg(`Dice Rolled: ${stats.diceRolled || 0}`),
-                    displayMsg(`Magic 8-Ball Used: ${stats.magic8ballUsed || 0}`),
-                    displayMsg(`Coins Flipped: ${stats.coinsFlipped || 0}`),
-                    displayMsg(`Games Played: ${stats.gamesPlayed || 0}`),
-                    displayMsg(`Secrets Found: ${stats.secretsFound || 0}`)
-                  )
-                })
-              })
+          stats(currentUser, displayMsg, setLogs)
           break
 
         case "whoami":
@@ -163,44 +161,17 @@ export default function CLI() {
           break
 
         case "ps":
-          displayMsg(<span className="text-blue-500">PID   TTY    TIME    CMD</span>)
-          displayMsg("----------------------------")
-          if (startTime) {
-            const uptime = new Date(new Date() - startTime)
-            const hours = uptime.getUTCHours().toString().padStart(2, '0')
-            const minutes = uptime.getUTCMinutes().toString().padStart(2, '0')
-            const seconds = uptime.getUTCSeconds().toString().padStart(2, '0')
-            const uptimeFormatted = `${hours}:${minutes}:${seconds}`
-            displayMsg(`1337 pts/0 ${uptimeFormatted} grue.sh`)
-            displayMsg(`1338 pts/1 ${uptimeFormatted} notAVirus.exe`)
-          } else {
-            displayMsg("No processes found")
-          }
+          ps(startTime, displayMsg)
           break
 
           case "kill":
-            args.length === 0
-              ? displayMsg("Usage: kill <PID>")
-              : args[0] === "1337"
-              ? (
-                displayMsg(<span className="text-red-500">You cannot kill the grue.</span>),
-                displayMsg(<>{`The grue is `}<span className="text-red-500">eternal</span></>),
-                displayMsg(<>{`the grue is `}<span className="text-red-500">infinite</span></>),
-                displayMsg("the grue is..."),
-                displayMsg(<span className="text-red-500">hungry</span>),
-                displayMsg("You are eaten by the grue."),
-                exitCli(setLogs)       
-                )
-              : args[0] === "1338"
-              ? displayMsg(<span className="text-red-500">You cannot kill the virus. This is not a bug, it's a feature.</span>)
-              : displayMsg(`No process found with PID ${args[0]}`)
+            kill(args, displayMsg, setLogs)
             break        
 
         case "df":
         case "du":
         case "top":
           displayMsg("Accessing system data...")
-
           displayMsg(<span className="text-red-500">Access denied: the grue does not have access to your system data.</span>)
           displayMsg("...for now.")
           currentUser && secretDiscovered(currentUser, 'df', foundSecrets, setFoundSecrets, displayMsg)
@@ -355,18 +326,7 @@ export default function CLI() {
         case "hey": 
         case "hello":
         case "hi":
-          const greetings = [
-            "Hey there! Roll a dice, flip a coin, or ask the magic8ball!",
-            "Hello, adventurer! Want to try your luck with a dice roll?",
-            "Yo! Will it be heads or tails in your coin flip?",
-            "Howdy! Say the secret word 'xyzzy' for a surprise!",
-            "Ah, brave traveler, you've arrived. What's your next move?",
-            "Greetings, wanderer! What adventure shall we embark on today?",
-            "Hello, hero! The world awaits — what will you do now?",
-            "Hey, adventurer! The journey is yours to shape — what's next?",
-            "Welcome, traveler! Ready to explore the unknown?",
-            "Ah, a new face! What's your first quest on this fine day?"
-          ]
+          const greetings = getGreetings()
           const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)]
           displayMsg(randomGreeting)
           break
@@ -379,28 +339,7 @@ export default function CLI() {
           break
 
         case "magic8ball":
-          const responses = [
-            "It is certain.",
-            "It is decidedly so.",
-            "Without a doubt.",
-            "Yes - definitely.",
-            "You may rely on it.",
-            "As I see it, yes.",
-            "Most likely.",
-            "Outlook good.",
-            "Yes.",
-            "Signs point to yes.",
-            "Reply hazy, try again.",
-            "Ask again later.",
-            "Better not tell you now.",
-            "Cannot predict now.",
-            "Concentrate and ask again.",
-            "Don't count on it.",
-            "My reply is no.",
-            "My sources say no.",
-            "Outlook not so good.",
-            "Very doubtful."
-          ]
+          const responses = getMagic8BallResponses()
           const randomResponse = responses[Math.floor(Math.random() * responses.length)]
           displayMsg(randomResponse)
           currentUser && updateUserStat(currentUser, "magic8ballUsed")
