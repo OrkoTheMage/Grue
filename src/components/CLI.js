@@ -164,7 +164,7 @@ export default function CLI() {
 
         case "helpmore":
           displayHelpMore(setLogs)
-          currentUser && secretDiscovered('help')
+          currentUser && secretDiscovered('help') //fixed
           break
 
         case "reboot":
