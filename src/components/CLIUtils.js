@@ -1,3 +1,6 @@
+import React from 'react'
+import { getDiscoveredSecrets, recordDiscoveredSecret } from "./auth"
+
 export const clearLogs = (setLogs, setInput) => {
   setLogs([])
   setInput("")
@@ -99,4 +102,31 @@ export const generatePrompt = (currentUser) => {
   return currentUser 
     ? <span className="text-green-400">{`${currentUser}@system:`}</span>
     : <span className="text-green-400">system:</span>
+}
+
+export const loadUserSecrets = async (currentUser, setFoundSecrets) => {
+  if (!currentUser) return
+  
+  const userSecrets = await getDiscoveredSecrets(currentUser)
+  if (userSecrets) {
+    setFoundSecrets(prev => ({
+      ...prev,
+      ...userSecrets
+    }))
+  }
+}
+
+export const secretDiscovered = async (currentUser, secretName, foundSecrets, setFoundSecrets, displayMsg) => {
+  if (!currentUser) return false
+  if (foundSecrets[secretName]) return false // Already found locally
+  
+  const result = await recordDiscoveredSecret(currentUser, secretName)
+  
+  if (result.success && !result.alreadyDiscovered) {
+    setFoundSecrets(prev => ({...prev, [secretName]: true}))
+    displayMsg(<span className="text-yellow-400">You found a secret!</span>)
+    return true
+  }
+  
+  return false
 }

@@ -44,11 +44,8 @@ export const loginUser = async (args, displayMsg, setCurrentUser) => {
 
     const data = await response.json()
 
-    console.log("Server Response:", data) // 🔍 Log this to see the full error message
-    console.log("HTTP Status:", response.status) // Check the status code
-
     if (!response.ok) {
-      displayMsg(data.message)
+      displayMsg("Incorrect username or password.")
       return
     }
 

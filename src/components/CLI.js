@@ -2,11 +2,12 @@
 import React, { useEffect, useRef, useState } from "react"
 import { startupMsg } from "./startupMsg"
 import { displayHelp, displayHelpMore } from "./displayHelp"
-import { registerUser, loginUser, updateUserStat, getUserStatistics, recordDiscoveredSecret, getDiscoveredSecrets } from "./auth"
-import { animateDotsWithMessage, clearLogs, createIframe, exitCli, generatePrompt } from "./CLIUtils"
+import { registerUser, loginUser, updateUserStat, getUserStatistics } from "./auth"
+import { animateDotsWithMessage, clearLogs, createIframe, exitCli, generatePrompt, loadUserSecrets, secretDiscovered } from "./CLIUtils"
 import { changeDirectory, listDirectory, catFile } from "./directoryUtils"
 
 export default function CLI() {
+  const [startupComplete, setStartupComplete] = useState(false)
   const [input, setInput] = useState("")
   const [logs, setLogs] = useState([])
   const [commandHistory, setCommandHistory] = useState([])
@@ -31,45 +32,17 @@ export default function CLI() {
 
   // Display startup message
   useEffect(() => {
-    const typeNextMessage = startupMsg(setLogs)
-    typeNextMessage(() => {}) 
+    const typeNextMessage = startupMsg(setLogs, () => {
+      setStartupComplete(true)    })
+    typeNextMessage()
   }, [])
 
   // Fetch discovered secrets when user logs in
   useEffect(() => {
     if (currentUser) {
-      loadUserSecrets()
+      loadUserSecrets(currentUser, setFoundSecrets)
     }
   }, [currentUser])
-
-  // Load user's previously discovered secrets
-  const loadUserSecrets = async () => {
-    if (!currentUser) return
-    
-    const userSecrets = await getDiscoveredSecrets(currentUser)
-    if (userSecrets) {
-      setFoundSecrets(prev => ({
-        ...prev,
-        ...userSecrets
-      }))
-    }
-  }
-
-  // Handle secret discovery
-  const secretDiscovered = async (secretName) => {
-    if (!currentUser) return false
-    if (foundSecrets[secretName]) return false // Already found locally
-    
-    const result = await recordDiscoveredSecret(currentUser, secretName)
-    
-    if (result.success && !result.alreadyDiscovered) {
-      setFoundSecrets(prev => ({...prev, [secretName]: true}))
-      displayMsg(<span className="text-yellow-400">You found a secret!</span>)
-      return true
-    }
-    
-    return false
-  }
 
   // Scroll to the bottom of the logs
   useEffect(() => {
@@ -164,7 +137,7 @@ export default function CLI() {
 
         case "helpmore":
           displayHelpMore(setLogs)
-          currentUser && secretDiscovered('help') //fixed
+          currentUser && secretDiscovered(currentUser, 'help', foundSecrets, setFoundSecrets, displayMsg)
           break
 
         case "reboot":
@@ -201,7 +174,7 @@ export default function CLI() {
             : (
                 displayMsg(`Attempting to create ${args[0]}...`),
                 displayMsg("Permission denied: Grue have disabled directory creation."),
-                currentUser && secretDiscovered('mkdir')
+                currentUser && secretDiscovered(currentUser, 'mkdir', foundSecrets, setFoundSecrets, displayMsg)
               )
           break
 
@@ -213,13 +186,13 @@ export default function CLI() {
                 displayMsg("---------------------------------"),
                 displayMsg(`No manual entry for ${args[0]}`),
                 displayMsg("(The grue has eaten all the documentation)"),
-                currentUser && secretDiscovered('man')
+                currentUser && secretDiscovered(currentUser, 'man', foundSecrets, setFoundSecrets, displayMsg)
               )
           break
 
         case "rm":
           displayMsg("The grue prevents you from destroying it's domain.")
-          currentUser && secretDiscovered('rm')
+          currentUser && secretDiscovered(currentUser, 'rm', foundSecrets, setFoundSecrets, displayMsg)
           break
 
         case "touch":
@@ -228,7 +201,7 @@ export default function CLI() {
             : (
                 displayMsg(`Attempting to create ${args[0]}...`),
                 displayMsg("Permission denied: Grue have disabled file creation."),
-                currentUser && secretDiscovered('touch')
+                currentUser && secretDiscovered(currentUser, 'touch', foundSecrets, setFoundSecrets, displayMsg)
               )
           break
 
@@ -371,7 +344,7 @@ export default function CLI() {
         case "west":
           displayMsg("You cannot go that anywhere.")
           displayMsg("..You are stuck in the darkness")
-          currentUser && secretDiscovered('direction')
+          currentUser && secretDiscovered(currentUser, 'direction', foundSecrets, setFoundSecrets, displayMsg)
           break
 
         case "examine":
@@ -380,7 +353,7 @@ export default function CLI() {
           displayMsg("You examine your surroundings carefully...")
           displayMsg("You see a faint cursor blinking in the darkness.")
           displayMsg("There might be a grue nearby.")
-          currentUser && secretDiscovered('examine')
+          currentUser && secretDiscovered(currentUser, 'examine', foundSecrets, setFoundSecrets, displayMsg)
           break
 
         case "i":
@@ -389,29 +362,29 @@ export default function CLI() {
           displayMsg("- A terminal window")
           displayMsg("- Some unfinished code")
           displayMsg("- A vague sense of purpose")
-          currentUser && secretDiscovered('inventory')
+          currentUser && secretDiscovered(currentUser, 'inventory', foundSecrets, setFoundSecrets, displayMsg)
           break
 
         case "sudo":
           displayMsg("Nice try, but you're not the superuser here!")
-          currentUser && secretDiscovered('sudo')
+          currentUser && secretDiscovered(currentUser, 'sudo', foundSecrets, setFoundSecrets, displayMsg)
           break
 
         case "wait":
         case "z":
           displayMsg("Time passes... The cursor continues to blink.")
-          currentUser && secretDiscovered('wait')
+          currentUser && secretDiscovered(currentUser, 'wait', foundSecrets, setFoundSecrets, displayMsg)
           break
 
         case "xyzzy":
           displayMsg("You speak the magic words, but nothing happens…")
-          currentUser && secretDiscovered('xyzzy')
+          currentUser && secretDiscovered(currentUser, 'xyzzy', foundSecrets, setFoundSecrets, displayMsg)
           break
         
         case "light":
           displayMsg("You strike a match, and for a brief moment, the darkness recedes.")
           displayMsg("A pair of glowing eyes stare at you from the abyss... and then vanish.")
-          currentUser && secretDiscovered('light')
+          currentUser && secretDiscovered(currentUser, 'light', foundSecrets, setFoundSecrets, displayMsg)
           break
 
 
@@ -446,10 +419,11 @@ export default function CLI() {
           ))}
           <div ref={logsEndRef} />
           <div className="flex items-center text-2xl pt-12">
-            <span className="pr-2 text-2xl">{generatePrompt(currentUser)}</span>
-            <span className="text-blue-500 mr-2">~{currentDir}</span>
-            <span className="text-white"> </span>
-            <span className="text-white mr-2">$</span>
+            {startupComplete && (
+              <>
+                <span className="pr-2 text-2xl">{generatePrompt(currentUser)}</span>
+                <span className="text-blue-500 mr-2">~{currentDir}</span>
+                <span className="text-white mr-2">$</span>
             <input
               type="text"
               className="bg-transparent border-none outline-none text-white w-full text-2xl caret-white"
@@ -458,9 +432,12 @@ export default function CLI() {
               onKeyDown={handleCommand}
               autoFocus
             />
+            </>
+            )}
           </div>
         </div>
       </div>
     </div>
   )
+  
 }

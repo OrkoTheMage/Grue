@@ -12,7 +12,7 @@ const ascii = `
                ███    ███                         
 `
 
-export const startupMsg = (setLogs) => {
+export const startupMsg = (setLogs, onComplete) => {
   const messages = [
     "Welcome user,",
     "It is pitch black...",
@@ -65,6 +65,11 @@ export const startupMsg = (setLogs) => {
         const asciiElement = document.querySelector('.ascii-text')
         if (asciiElement) {
           asciiElement.classList.add('fade-in')
+        }
+        
+        // Call the completion callback after everything is done
+        if (onComplete && typeof onComplete === 'function') {
+          setTimeout(onComplete, 300)
         }
       }, 100) // Adding a slight delay to allow React to render
     }
