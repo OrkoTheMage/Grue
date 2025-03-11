@@ -110,7 +110,7 @@ export default function CLI() {
           break
 
         case "whoareyou":
-          displayMsg("A grue. A sinister, lurking presence in the dark places of the earth.\nMy favorite diet are adventurers,\nMy insatiable appetite is tempered by my fear of light.")
+          displayMsg("A grue. A sinister, lurking presence in the dark places of the earth.\nMy favorite diet is adventurers,\nMy insatiable appetite is tempered by my fear of light.")
           break
           
 
