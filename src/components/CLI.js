@@ -14,6 +14,7 @@ export default function CLI() {
   const [historyIndex, setHistoryIndex] = useState(-1)
   const [currentUser, setCurrentUser] = useState(null)
   const [currentDir, setCurrentDir] = useState("/")
+  const [startTime, setStartTime] = useState(null)
   const [foundSecrets, setFoundSecrets] = useState({
     xyzzy: false,
     inventory: false,
@@ -37,6 +38,7 @@ export default function CLI() {
     const typeNextMessage = startupMsg(setLogs, () => {
       setStartupComplete(true)    })
     typeNextMessage()
+    setStartTime(new Date())
   }, [])
 
   // Fetch discovered secrets when user logs in
@@ -159,6 +161,39 @@ export default function CLI() {
         case "--version":
           displayMsg("Grue.sh v1.0.0")
           break
+
+        case "ps":
+          displayMsg(<span className="text-blue-500">PID   TTY    TIME    CMD</span>)
+          displayMsg("----------------------------")
+          if (startTime) {
+            const uptime = new Date(new Date() - startTime)
+            const hours = uptime.getUTCHours().toString().padStart(2, '0')
+            const minutes = uptime.getUTCMinutes().toString().padStart(2, '0')
+            const seconds = uptime.getUTCSeconds().toString().padStart(2, '0')
+            const uptimeFormatted = `${hours}:${minutes}:${seconds}`
+            displayMsg(`1337 pts/0 ${uptimeFormatted} grue.sh`)
+            displayMsg(`1338 pts/1 ${uptimeFormatted} notAVirus.exe`)
+          } else {
+            displayMsg("No processes found")
+          }
+          break
+
+          case "kill":
+            args.length === 0
+              ? displayMsg("Usage: kill <PID>")
+              : args[0] === "1337"
+              ? (
+                displayMsg("You cannot kill the grue."),
+                displayMsg("the grue is eternal", 4, setLogs),
+                displayMsg("the grue is infinite", 4, setLogs),
+                displayMsg("the grue is...", 4, setLogs),
+                displayMsg("hungry", 4, setLogs),
+                displayMsg("You are eaten by the grue.")
+                )
+              : args[0] === "1338"
+              ? displayMsg("You cannot kill the virus. This is not a bug, it's a feature.")
+              : displayMsg(`No process found with PID ${args[0]}`)
+            break        
 
         case "df":
         case "du":
