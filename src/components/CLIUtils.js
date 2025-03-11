@@ -124,7 +124,11 @@ export const secretDiscovered = async (currentUser, secretName, foundSecrets, se
   
   if (result.success && !result.alreadyDiscovered) {
     setFoundSecrets(prev => ({...prev, [secretName]: true}))
-    displayMsg(<span className="text-yellow-400">You found a secret!</span>)
+    if (secretName === "help") {
+      displayMsg(<span className="text-yellow-300">You found a secret! - Try finding more!</span>)
+    } else {
+      displayMsg(<span className="text-yellow-300">You found a secret!</span>)
+    }
     return true
   }
   

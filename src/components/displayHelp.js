@@ -37,6 +37,7 @@ export const displayHelpMore = (setLogs) => {
     { command: "hello", description: "- Greet me!" },
     { command: "whoami", description: "- Display the current user" },
     { command: "whoareyou", description: "- Learn more about me" },
+    { command: "version", description: "- Display the terminal version" },
     { command: "time", description: "- Display the current date/time" },
     { command: "magic8ball", description: "- Ask the magic 8-ball a question" },
     { command: "coinflip", description: "- Flip a coin" },

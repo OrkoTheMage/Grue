@@ -28,6 +28,7 @@ export default function CLI() {
     man: false,
     mkdir: false,
     cp: false,
+    df: false
   })
   const logsEndRef = useRef(null)
 
@@ -159,6 +160,18 @@ export default function CLI() {
           displayMsg("Grue.sh v1.0.0")
           break
 
+        case "df":
+        case "du":
+        case "top":
+          displayMsg("Accessing system data...")
+
+          displayMsg(<span className="text-red-500">Access denied: the grue does not have access to your system data.</span>)
+          displayMsg("...for now.")
+          currentUser && secretDiscovered(currentUser, 'df', foundSecrets, setFoundSecrets, displayMsg)
+          break
+        
+        
+
         // ===== DIRECTORY/FILE COMMANDS =====
         case "cat":
           args.length === 0
@@ -191,7 +204,7 @@ export default function CLI() {
             ? displayMsg("Usage: mkdir <dirname>")
             : (
                 displayMsg(`Attempting to create ${args[0]}...`),
-                displayMsg("Permission denied: the grue have disabled directory creation."),
+                displayMsg(<span className="text-red-500">Permission denied: the grue have disabled directory creation.</span>),
                 currentUser && secretDiscovered(currentUser, 'mkdir', foundSecrets, setFoundSecrets, displayMsg)
               )
           break
@@ -213,7 +226,7 @@ export default function CLI() {
             ? displayMsg("Usage: rm <filename>")
             : (
                 displayMsg(`Attempting to delete ${args[0]}...`),
-                displayMsg("Permission denied: the grue have disabled file deletion."),
+                displayMsg(<span className="text-red-500">Permission denied: the grue have disabled file deletion.</span>),
                 currentUser && secretDiscovered(currentUser, 'rm', foundSecrets, setFoundSecrets, displayMsg)
             )
           break
@@ -223,7 +236,7 @@ export default function CLI() {
             ? displayMsg("Usage: touch <filename>")
             : (
                 displayMsg(`Attempting to create ${args[0]}...`),
-                displayMsg("Permission denied: the grue have disabled file creation."),
+                displayMsg(<span className="text-red-500">Permission denied: the grue have disabled file creation.</span>),
                 currentUser && secretDiscovered(currentUser, 'touch', foundSecrets, setFoundSecrets, displayMsg)
               )
           break
@@ -234,7 +247,7 @@ export default function CLI() {
             ? displayMsg("Usage: cp/mv <source> <destination>")
             : ( 
               displayMsg("Attempting to copy/move files..."),
-              displayMsg("Permission denied: the grue have disabled file copying/moving."),
+              displayMsg(<span className="text-red-500">Permission denied: the grue have disabled file copying/moving.</span>),
               currentUser && secretDiscovered(currentUser, 'cp', foundSecrets, setFoundSecrets, displayMsg)
             )
           break
@@ -414,6 +427,9 @@ export default function CLI() {
           break
         
         case "light":
+        case "torch":
+        case "match":
+        case "lantern":
           displayMsg("You strike a match, and for a brief moment, the darkness recedes.")
           displayMsg("A pair of glowing eyes stare at you from the abyss... and then vanish.")
           currentUser && secretDiscovered(currentUser, 'light', foundSecrets, setFoundSecrets, displayMsg)
