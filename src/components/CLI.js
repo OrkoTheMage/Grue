@@ -404,7 +404,7 @@ export default function CLI() {
           break
 
         case "xyzzy":
-          displayMsg("I see what you did there...")
+          displayMsg("You speak the magic words, but nothing happens…")
           currentUser && secretDiscovered('xyzzy')
           break
         
