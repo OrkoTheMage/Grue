@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from "react"
 import { startupMsg } from "./startupMsg"
 import { displayHelp, displayHelpMore } from "./displayHelp"
-import { registerUser, loginUser } from "./auth"
+import { registerUser, loginUser, updateUserStat, getUserStatistics } from "./auth"
 import { animateDotsWithMessage, clearLogs, createIframe, exitCli, generatePrompt } from "./CLIUtils"
 import { changeDirectory, listDirectory } from "./directoryUtils"
 
@@ -13,6 +13,14 @@ export default function CLI() {
   const [historyIndex, setHistoryIndex] = useState(-1)
   const [currentUser, setCurrentUser] = useState(null)
   const [currentDir, setCurrentDir] = useState("/")
+  const [foundSecrets, setFoundSecrets] = useState({
+    xyzzy: false,
+    sudo: false,
+    inventory: false,
+    wait: false,
+    examine: false,
+    direction: false
+  })
   const logsEndRef = useRef(null)
 
   // Display startup message
@@ -42,7 +50,7 @@ export default function CLI() {
       // Log the user input, display in green
       setLogs(prev => [
         ...prev,
-        <div className="text-green-400 p-4">{`> ${input}`}</div> // Make input text green
+        <div className="text-green-400 p-4">{`> ${input}`}</div>
       ])
   
       switch (command) {
@@ -65,7 +73,28 @@ export default function CLI() {
         case "whoareyou":
           displayMsg("The grue is a sinister, lurking presence in the dark places of the earth.\nIts favorite diet is adventurers,\nbut its insatiable appetite is tempered by its fear of light.")
           break
-  
+
+          case "stats":
+            if (!currentUser) {
+              displayMsg("You must be logged in to view your stats.")
+            } else {
+              animateDotsWithMessage("Retrieving your stats", 4, setLogs, () => {
+                getUserStatistics(currentUser, displayMsg).then(stats => {
+                  if (stats) {
+                    displayMsg(<span className="text-blue-500">Your Statistics:</span>)
+                    displayMsg(`-------------------------------------------------`)
+                    displayMsg(`Dice Rolled: ${stats.diceRolled || 0}`)
+                    displayMsg(`Magic 8-Ball Used: ${stats.magic8ballUsed || 0}`)
+                    displayMsg(`Coins Flipped: ${stats.coinsFlipped || 0}`)
+                    displayMsg(`Games Played: ${stats.gamesPlayed || 0}`)
+                    displayMsg(`Secrets Found: ${stats.secretsFound || 0}`)
+                  }
+                })
+              })
+            }
+            break
+
+
         // System-related commands
         case "clear":
         case "c":
@@ -78,6 +107,7 @@ export default function CLI() {
           displayHelpMore(setLogs)
           break
   
+
         // Directory and file-related commands
         case "ls":
           listDirectory(currentDir, setLogs)
@@ -86,6 +116,7 @@ export default function CLI() {
           changeDirectory(args, currentDir, setCurrentDir, setLogs)
           break
   
+
         // Game-related commands
           case "run":
           case "open":
@@ -99,21 +130,27 @@ export default function CLI() {
                 switch (gameName) {
                   case "inbetween":
                   case "in-between":
-                    animateDotsWithMessage("Launching Game", 3, setLogs, () => {
+                    animateDotsWithMessage("Launching Game", 4, setLogs, () => {
                       setLogs(prev => [
                         ...prev,
                         createIframe("inbetween", "https://homies-llc.github.io/In-Between/", "In Between")
                       ])
+                      if (currentUser) {
+                        updateUserStat(currentUser, "gamesPlayed")
+                      }
                     })
                     break
                   case "sigil":
                   case "sigil-the-city-of-doors":
                   case "sigilthecityofdoors":
-                    animateDotsWithMessage("Launching Game", 3, setLogs, () => {
+                    animateDotsWithMessage("Launching Game", 4, setLogs, () => {
                       setLogs(prev => [
                         ...prev,
                         createIframe("sigil", "https://orkothemage.github.io/Sigil-The-City-of-Doors/sigil.html", "Sigil")
                       ])
+                      if (currentUser) {
+                        updateUserStat(currentUser, "gamesPlayed")
+                      }
                     })
                     break
                   default:
@@ -124,10 +161,79 @@ export default function CLI() {
               }
               break
   
+
         // Fun commands
         case "xyzzy":
           displayMsg("I see what you did there...")
+          if (currentUser && !foundSecrets.xyzzy) {
+            updateUserStat(currentUser, "secretsFound")
+            setFoundSecrets(prev => ({...prev, xyzzy: true}))
+            displayMsg(<span className="text-yellow-400">You found a secret!</span>)
+          }
           break
+
+        case "sudo":
+          displayMsg("Nice try, but you're not the superuser here!")
+          if (currentUser && !foundSecrets.sudo) {
+            updateUserStat(currentUser, "secretsFound")
+            setFoundSecrets(prev => ({...prev, sudo: true}))
+            displayMsg(<span className="text-yellow-400">You found a secret!</span>)
+          }
+          break
+
+          case "inventory":
+          case "i":
+            displayMsg("You are carrying:")
+            displayMsg("- A terminal window")
+            displayMsg("- Some unfinished code")
+            displayMsg("- A vague sense of purpose")
+            if (currentUser && !foundSecrets.inventory) {
+              updateUserStat(currentUser, "secretsFound")
+              setFoundSecrets(prev => ({...prev, inventory: true}))
+              displayMsg(<span className="text-yellow-400">You found a secret!</span>)
+            }
+            break
+
+            case "examine":
+            case "x":
+                  displayMsg("You examine your surroundings carefully...")
+                  displayMsg("You see a faint cursor blinking in the darkness.")
+                  displayMsg("There might be a grue nearby.")
+                  if (currentUser && !foundSecrets.examine) {
+                      updateUserStat(currentUser, "secretsFound")
+                      setFoundSecrets(prev => ({...prev, examine: true}))
+                      displayMsg(<span className="text-yellow-400">You found a secret!</span>)
+                  }
+                  break
+
+            case "wait":
+            case "z":
+                  displayMsg("Time passes... The cursor continues to blink.")
+                  if (currentUser && !foundSecrets.wait) {
+                      updateUserStat(currentUser, "secretsFound")
+                      setFoundSecrets(prev => ({...prev, wait: true}))
+                      displayMsg(<span className="text-yellow-400">You found a secret!</span>)
+                  }
+                  break
+                  
+          case "north":
+          case "south":
+          case "east":
+          case "west":
+          case "n":
+          case "s":
+          case "e":
+          case "w":    
+                displayMsg("You cannot go that anywhere.")
+                displayMsg("..You are stuck in the darkness")
+                if (currentUser && !foundSecrets.direction) {
+                    updateUserStat(currentUser, "secretsFound")
+                    setFoundSecrets(prev => ({...prev, direction: true}))
+                    displayMsg(<span className="text-yellow-400">You found a secret!</span>)
+                }
+                break
+
+        
 
         case "hello":
         case "hi":
@@ -177,42 +283,33 @@ export default function CLI() {
           ]
           const randomResponse = responses[Math.floor(Math.random() * responses.length)]
           displayMsg(randomResponse)
+          if (currentUser) {
+            updateUserStat(currentUser, "magic8ballUsed")
+          }
           break
  
           case "coinflip":
           const coin = Math.random() < 0.5 ? "Heads" : "Tails"
           displayMsg(`Flipping coin... It's ${coin}!`)
+          if (currentUser) {
+            updateUserStat(currentUser, "coinsFlipped")
+          }
           break
 
           case "d20":
-          const rollD20 = Math.floor(Math.random() * 20) + 1
-          displayMsg(`Rolling a d20... You got a ${rollD20}!`)
-          break
-
           case "d12":
-          const rollD12 = Math.floor(Math.random() * 12) + 1
-          displayMsg(`Rolling a d12... You got a ${rollD12}!`)
-          break
-
           case "d10":
-          const rollD10 = Math.floor(Math.random() * 10) + 1
-          displayMsg(`Rolling a d10... You got a ${rollD10}!`)
-          break
-
           case "d8":
-          const rollD8 = Math.floor(Math.random() * 8) + 1
-          displayMsg(`Rolling a d8... You got a ${rollD8}!`)
-          break
-
           case "d6":
-          const rollD6 = Math.floor(Math.random() * 6) + 1
-          displayMsg(`Rolling a d6... You got a ${rollD6}!`)
-          break
-
           case "d4":
-          const rollD4 = Math.floor(Math.random() * 4) + 1
-          displayMsg(`Rolling a d4... You got a ${rollD4}!`)
-          break
+            const diceSize = parseInt(command.substring(1))
+            const roll = Math.floor(Math.random() * diceSize) + 1
+            displayMsg(`Rolling a ${command}... You got a ${roll}!`)
+            // Update stats if user is logged in
+            if (currentUser) {
+              updateUserStat(currentUser, "diceRolled")
+            }
+            break
 
           case "joke":
           fetch("https://official-joke-api.appspot.com/random_joke")
@@ -228,6 +325,7 @@ export default function CLI() {
             displayMsg("Use it wisely!")
           break
   
+
         // Exit command
         case "exit":
         case "quit":
@@ -243,6 +341,7 @@ export default function CLI() {
           window.location.reload()
           break
   
+
         // Command not found
         default:
           displayMsg(`Command '${command}' not found.`)

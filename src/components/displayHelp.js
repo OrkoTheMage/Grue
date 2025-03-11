@@ -24,6 +24,9 @@ export const displayHelp = (setLogs) => {
       <span className="text-blue-500">whoareyou</span> <span>{"- Learn more about me"}</span>
     </>,
     <>
+      <span className="text-blue-500">stats</span> <span>{"- View your activity statistics"}</span>
+    </>,
+    <>
       <span className="text-blue-500">clear</span> <span>{"- Clear the terminal logs"}</span>
     </>,
     <>
@@ -37,9 +40,6 @@ export const displayHelp = (setLogs) => {
     </>,
   ])
 }
-
-
-
 
 export const displayHelpMore = (setLogs) => {
   setLogs(prev => [

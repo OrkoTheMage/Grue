@@ -54,3 +54,52 @@ export const loginUser = async (args, displayMsg, setCurrentUser) => {
   }
 }
 
+export const updateUserStat = async (username, statType) => {
+  if (!username) return false
+  
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/updateStats`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, statType })
+    })
+    
+    return response.ok
+  } catch (error) {
+    console.error("Error updating user stats:", error)
+    return false
+  }
+}
+
+export const getUserStatistics = async (username, displayMsg) => {
+  if (!username) {
+    displayMsg("You must be logged in to view stats.")
+    return null
+  }
+  
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/getUserStats`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username })
+    })
+    
+    const data = await response.json()
+    
+    if (!response.ok) {
+      displayMsg(data.error || "Failed to retrieve stats")
+      return null
+    }
+    
+    return data.stats
+  } catch (error) {
+    console.error("Error retrieving user stats:", error)
+    displayMsg("Error retrieving stats")
+    return null
+  }
+}
+
