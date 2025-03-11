@@ -164,11 +164,7 @@ export default function CLI() {
 
         case "helpmore":
           displayHelpMore(setLogs)
-          currentUser && !foundSecrets.help && (
-            updateUserStat(currentUser, "secretsFound"),
-            setFoundSecrets(prev => ({...prev, help: true})),
-            displayMsg(<span className="text-yellow-400">You found a secret! - Try finding more!</span>)
-          )
+          currentUser && secretDiscovered('help')
           break
 
         case "reboot":
