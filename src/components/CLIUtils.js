@@ -3,20 +3,49 @@ export const clearLogs = (setLogs, setInput) => {
   setInput("")
 }
 
-export const animateDotsWithMessage = (message, maxDots, setLogs, onComplete, interval = 1000) => {
+export const animateDotsWithMessage = (message, maxDots, setLogs, callback) => {
   let dotCount = 0
-  const dotInterval = setInterval(() => {
-    dotCount += 1
-    setLogs(prev => [
-      ...prev.slice(0, prev.length - 1),
-      `${message}${'.'.repeat(dotCount)}`
-    ])
-
-    if (dotCount === maxDots) {
-      clearInterval(dotInterval)
-      if (onComplete) onComplete()
+  
+  // Store the initial log length to know where our animation starts
+  let initialLogPosition = null
+  
+  const animate = () => {
+    // Build the message with the current number of dots
+    const dotsMessage = `${message}${'.'.repeat(dotCount + 1)}`
+    
+    if (initialLogPosition === null) {
+      // First execution - add the message to logs and store its position
+      setLogs(prev => {
+        initialLogPosition = prev.length
+        return [...prev, dotsMessage]
+      })
+    } else {
+      // Update the existing message with new dots
+      setLogs(prev => {
+        const newLogs = [...prev]
+        newLogs[initialLogPosition] = dotsMessage
+        return newLogs
+      })
     }
-  }, interval)
+    
+    if (dotCount < maxDots - 1) {
+      // Continue animation
+      dotCount++
+      setTimeout(animate, 500)
+    } else {
+      // Animation complete, clear the message and run callback
+      setLogs(prev => {
+        const newLogs = [...prev]
+        // Remove the animation message when complete
+        newLogs.splice(initialLogPosition, 1)
+        return newLogs
+      })
+      
+      callback()
+    }
+  }
+  
+  animate()
 }
 
 export const createIframe = (key, src, title) => {
@@ -60,21 +89,16 @@ export const exitCli = (setLogs, setInput, setCurrentUser, currentUser) => {
     return
   }
 
-  setLogs(prev => [...prev, "Logging out"])
-
-  animateDotsWithMessage("Logging out", 3, setLogs, () => {
+  animateDotsWithMessage("Logging out", 4, setLogs, () => {
     setCurrentUser(null)
     setInput("")
     setLogs(prev => [
       ...prev,
       "Logged out successfully.",
-      "Restarting"
     ])
 
-    animateDotsWithMessage("Restarting", 5, setLogs, () => {
-      setTimeout(() => {
+    animateDotsWithMessage("Restarting", 6, setLogs, () => {
         window.location.reload()
-      }, 1000)
     })
   })
 }
