@@ -26,7 +26,8 @@ export default function CLI() {
     touch: false,
     rm: false,
     man: false,
-    mkdir: false
+    mkdir: false,
+    cp: false,
   })
   const logsEndRef = useRef(null)
 
@@ -68,7 +69,7 @@ export default function CLI() {
       ])
   
       switch (command) {
-        // User account commands
+        // ===== USER ACCOUNT COMMANDS =====
         case "login":
           args.length < 2
             ? displayMsg("Usage: login <username> <password>")
@@ -76,7 +77,9 @@ export default function CLI() {
           break
 
         case "logout":
-          exitCli(setLogs, setInput, setCurrentUser, currentUser)
+          currentUser
+            ? (setCurrentUser(null), displayMsg("You have been logged out."))
+            : displayMsg("You are not currently logged in.")
           break
 
         case "register":
@@ -104,17 +107,18 @@ export default function CLI() {
           break
 
         case "whoami":
+        case "who":
           currentUser
             ? displayMsg(`You are logged in as "${currentUser}".`)
             : displayMsg("You are not currently logged in. Maybe you're a grue too...")
           break
 
         case "whoareyou":
+        case "whoru":
           displayMsg("A grue. A sinister, lurking presence in the dark places of the earth.\nMy favorite diet is adventurers,\nMy insatiable appetite is tempered by my fear of light.")
           break
           
-
-        // System commands
+        // ===== SYSTEM COMMANDS =====
         case "c":
         case "clear":
           clearLogs(setLogs, setInput)
@@ -124,11 +128,6 @@ export default function CLI() {
           args.length === 0
             ? displayMsg("")
             : displayMsg(args.join(" "))
-          break
-
-        case "exit":
-        case "quit":
-          exitCli(setLogs, setInput, setCurrentUser, currentUser)
           break
 
         case "help":
@@ -151,9 +150,16 @@ export default function CLI() {
         case "time":
           displayMsg(`${new Date().toLocaleTimeString()} - ${new Date().toLocaleDateString()}`)
           break
+                
+        case "version":
+        case "ver":
+        case "v":
+        case "--v":
+        case "--version":
+          displayMsg("Grue.sh v1.0.0")
+          break
 
-
-        // Directory commands
+        // ===== DIRECTORY/FILE COMMANDS =====
         case "cat":
           args.length === 0
             ? displayMsg("Usage: cat <filename>")
@@ -168,12 +174,24 @@ export default function CLI() {
           listDirectory(currentDir, setLogs)
           break
 
+        case "pwd":
+          displayMsg(
+            currentDir === "/"
+              ? (
+                currentUser
+                  ? `/home/${currentUser}`
+                  : "/home/guest"
+              )
+              : `/home/${currentUser || "guest"}${currentDir}`
+          )
+          break
+          
         case "mkdir":
           args.length === 0
             ? displayMsg("Usage: mkdir <dirname>")
             : (
                 displayMsg(`Attempting to create ${args[0]}...`),
-                displayMsg("Permission denied: Grue have disabled directory creation."),
+                displayMsg("Permission denied: the grue have disabled directory creation."),
                 currentUser && secretDiscovered(currentUser, 'mkdir', foundSecrets, setFoundSecrets, displayMsg)
               )
           break
@@ -191,8 +209,13 @@ export default function CLI() {
           break
 
         case "rm":
-          displayMsg("The grue prevents you from destroying it's domain.")
-          currentUser && secretDiscovered(currentUser, 'rm', foundSecrets, setFoundSecrets, displayMsg)
+          args.length === 0
+            ? displayMsg("Usage: rm <filename>")
+            : (
+                displayMsg(`Attempting to delete ${args[0]}...`),
+                displayMsg("Permission denied: the grue have disabled file deletion."),
+                currentUser && secretDiscovered(currentUser, 'rm', foundSecrets, setFoundSecrets, displayMsg)
+            )
           break
 
         case "touch":
@@ -200,13 +223,23 @@ export default function CLI() {
             ? displayMsg("Usage: touch <filename>")
             : (
                 displayMsg(`Attempting to create ${args[0]}...`),
-                displayMsg("Permission denied: Grue have disabled file creation."),
+                displayMsg("Permission denied: the grue have disabled file creation."),
                 currentUser && secretDiscovered(currentUser, 'touch', foundSecrets, setFoundSecrets, displayMsg)
               )
           break
 
-          
-        // Game commands
+        case "cp":
+        case "mv":
+          args.length === 0
+            ? displayMsg("Usage: cp/mv <source> <destination>")
+            : ( 
+              displayMsg("Attempting to copy/move files..."),
+              displayMsg("Permission denied: the grue have disabled file copying/moving."),
+              currentUser && secretDiscovered(currentUser, 'cp', foundSecrets, setFoundSecrets, displayMsg)
+            )
+          break
+
+        // ===== GAME COMMANDS =====  
         case "open":
         case "run":
         case "play":
@@ -251,8 +284,7 @@ export default function CLI() {
           }
           break
 
-
-        // Fun/utility commands
+        // ===== FUN/UTILITY COMMANDS =====
         case "coinflip":
           const coin = Math.random() < 0.5 ? "Heads" : "Tails"
           displayMsg(`Flipping coin... It's ${coin}!`)
@@ -331,9 +363,8 @@ export default function CLI() {
           displayMsg(`Generated password: ${password}`)
           displayMsg("Use it wisely!")
           break
-
           
-        // Secret commands
+        // ===== SECRET COMMANDS =====
         case "e":
         case "east":
         case "n":
@@ -366,6 +397,7 @@ export default function CLI() {
           break
 
         case "sudo":
+        case "chmod":
           displayMsg("Nice try, but you're not the superuser here!")
           currentUser && secretDiscovered(currentUser, 'sudo', foundSecrets, setFoundSecrets, displayMsg)
           break
@@ -387,7 +419,7 @@ export default function CLI() {
           currentUser && secretDiscovered(currentUser, 'light', foundSecrets, setFoundSecrets, displayMsg)
           break
 
-
+        // Default case
         default:
           displayMsg(`Command '${command}' not found.`)
           break

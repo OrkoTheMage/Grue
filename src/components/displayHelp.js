@@ -17,6 +17,7 @@ export const displayHelp = (setLogs) => {
     { command: "stats", description: "- View your activity statistics" },
     { command: "ls", description: "- List files in the current directory" },
     { command: "cd", description: "<directory> - Change the current directory" },
+    { command: "pwd", description: "- Display the current directory" },
     { command: "cat", description: "<filename> - Display the contents of a file" },
     { command: "echo", description: "<text> - Print text to the terminal" },
     { command: "run", description: "<game> - Launch a game" },
