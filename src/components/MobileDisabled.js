@@ -65,7 +65,7 @@ export default function MobileDisabled() {
   }
 
   return (
-    <div className="relative min-h-screen bg-black text-white" 
+    <div className="relative min-h-screen text-white" 
     style={{ minHeight: '100vh', minHeight: '100dvh' }}>
       <div className="crt-animation" 
       style={{ 
@@ -84,8 +84,7 @@ export default function MobileDisabled() {
         position: 'relative', 
         zIndex: 2, 
         minHeight: '100vh', 
-        minHeight: '100dvh', 
-        backgroundColor: 'black' 
+        minHeight: '100dvh',
         }}>
         <div className="flex items-center justify-center min-h-screen text-white font-mono">
           <div className="w-full max-w-4xl p-6">
