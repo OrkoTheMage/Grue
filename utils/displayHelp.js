@@ -28,7 +28,8 @@ export const displayHelp = (setLogs) => {
     { command: "help", description: "- Show this helpful message" },
   ];
 
-  setLogs(prev => [...prev, "Available commands:"]);
+  setLogs(prev => [...prev, <span className="text-blue-500">Available Commands:</span>]);
+  setLogs(prev => [...prev, <div>-------------------------------------------------</div>]);
   renderCommands(mainCommands, setLogs);
 }
 
@@ -49,6 +50,7 @@ export const displayHelpMore = (setLogs) => {
     { command: "...", description: "and more to discover!" },
   ];
 
-  setLogs(prev => [...prev, "More commands:"]);
+  setLogs(prev => [...prev, <span className="text-blue-500">More Commands:</span>]);
+  setLogs(prev => [...prev, <div>-------------------------------------------------</div>]);
   renderCommands(moreCommands, setLogs);
 }

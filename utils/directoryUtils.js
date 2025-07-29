@@ -1,7 +1,7 @@
 const fileSystem = {
   '/': ['games', 'projects', 'contact'],
   '/games': ['In-Between', 'Sigil-The-City-of-Doors'],
-  '/contact': ['Resume', 'GitHub'],
+  '/contact': ['Resume', 'GitHub', 'contactinfo.md'],
   '/projects': []
 }
 
@@ -22,6 +22,22 @@ export const catFile = (fileName, currentDir, setLogs) => {
     setLogs(prev => [
       ...prev,
       fileContents['/games/sigil']
+    ])
+    return
+  }
+  
+  // Handle contactinfo.md specifically
+  if (fileName.toLowerCase() === 'contactinfo.md' && currentDir === '/contact') {
+    setLogs(prev => [
+      ...prev,
+      <div key="contactinfo">
+        <div><span className="text-blue-500">Contact Information:</span></div>
+        <div>-------------------------------------------------</div>
+        <br />
+        <div><span className="text-blue-500">Email:</span> aeryngrindle@gmail.com</div>
+        <div><span className="text-blue-500">GitHub:</span> <a href="https://github.com/OrkoTheMage" target="_blank" rel="noopener noreferrer" className="underline">https://github.com/OrkoTheMage</a></div>
+        <div><span className="text-blue-500">Phone:</span> (281) 759-2177</div>
+      </div>
     ])
     return
   }
@@ -70,7 +86,7 @@ export const listDirectory = (currentDir, setLogs) => {
       ...prev,
       <div>
         {fileSystem[currentDir].map((item, index) => (
-          <span key={index} className="text-blue-500 mr-4">{item}</span>
+          <span key={index} className={`${item.includes('.') ? 'text-white' : 'text-blue-500'} mr-4`}>{item}</span>
         ))}
       </div>
     ])
