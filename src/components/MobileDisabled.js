@@ -53,7 +53,6 @@ export default function MobileDisabled() {
         charIndex++
         setTimeout(typeMessage, 50) // Typing speed
       } else {
-        // Message complete, add to typed messages and move to next
         setTypedMessages(prev => [...prev, currentMessage])
         setCurrentTyping("")
         messageIndex++
@@ -66,19 +65,36 @@ export default function MobileDisabled() {
   }
 
   return (
-    <div className="relative min-h-screen bg-black text-white">
-      <div className="crt-animation">
+    <div className="relative min-h-screen bg-black text-white" 
+    style={{ minHeight: '100vh', minHeight: '100dvh' }}>
+      <div className="crt-animation" 
+      style={{ 
+        position: 'fixed', 
+        top: 0, left: 0, 
+        width: '100%', 
+        height: '100%', 
+        minHeight: '100vh', 
+        minHeight: '100dvh' 
+        }}>
         <CRTAnimation/>
       </div>
 
-      <div className="cli-container">
+      <div className="cli-container" 
+      style={{ 
+        position: 'relative', 
+        zIndex: 2, 
+        minHeight: '100vh', 
+        minHeight: '100dvh', 
+        backgroundColor: 'black' 
+        }}>
         <div className="flex items-center justify-center min-h-screen text-white font-mono">
           <div className="w-full max-w-4xl p-6">
             <div className="text-center">
               
               {showError && (
                 <div className="ascii-text fade-in text-2xl mb-6">
-                  <span className="text-red-500">ERROR:</span> <span className="text-white">Incompatible terminal detected</span>
+                  <span className="text-red-500">ERROR:</span> 
+                    <span className="text-white">Incompatible terminal detected</span>
                 </div>
               )}
               

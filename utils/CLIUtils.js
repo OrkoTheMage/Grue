@@ -1,3 +1,7 @@
+// Utility functions for CLI interactions
+// These functions handle common CLI tasks like clearing logs, animating messages, creating iframes
+// Used in CLI components
+
 import React from 'react'
 import { getDiscoveredSecrets, getUserStatistics, recordDiscoveredSecret } from "./auth"
 

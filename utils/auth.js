@@ -1,3 +1,7 @@
+// Utility functions for user authentication and statistics
+// These functions handle user registration, login, and statistics management
+// Used in CLI commands and API interactions
+
 export const registerUser = async (args, displayMsg) => {
   const name = args[0]
   const password = args[1]

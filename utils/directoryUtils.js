@@ -1,3 +1,7 @@
+// Utility functions for directory and file management
+// These functions handle file system operations like listing directories, changing directories, and reading files
+// Used in CLI commands
+
 const fileSystem = {
   '/': ['games', 'projects', 'contact'],
   '/games': ['In-Between', 'Sigil-The-City-of-Doors'],

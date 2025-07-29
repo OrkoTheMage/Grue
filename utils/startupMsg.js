@@ -1,3 +1,7 @@
+// Utility functions for displaying startup messages
+// This function displays an ASCII art message and additional instructions
+// Used in the initial loading of the terminal
+
 "use client"
 
 const ascii = `

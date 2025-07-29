@@ -1,3 +1,7 @@
+// Utility functions to display help messages for CLI commands
+// These functions render available commands and their descriptions
+// Used in CLI commands "Help" and "HelpMore"
+
 // Helper function to render command entries
 const renderCommands = (commands, setLogs) => {
   setLogs(prev => [

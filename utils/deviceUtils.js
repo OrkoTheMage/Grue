@@ -1,3 +1,7 @@
+// Utility functions to detect device type
+// These functions check if the current device is a mobile or tablet device
+// Used in page.js to conditionally render components
+
 export const isMobile = () => {
   if (typeof window === 'undefined') return false
   
