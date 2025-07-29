@@ -221,7 +221,7 @@ export default function CLI() {
             ? displayMsg("What manual page do you want?")
             : (
                 displayMsg(<span className="text-blue-500">GRUE MANUAL SYSTEM</span>),
-                displayMsg("---------------------------------"),
+                displayMsg("-------------------------------------------------"),
                 displayMsg(`No manual entry for ${args[0]}`),
                 displayMsg("(The grue has eaten all the documentation)"),
                 currentUser && secretDiscovered(currentUser, 'man', foundSecrets, setFoundSecrets, displayMsg)
@@ -378,6 +378,7 @@ export default function CLI() {
         case "i":
         case "inventory":
           displayMsg(<span className="text-blue-500">Inventory:</span>)
+          displayMsg("-------------------------------------------------")
           displayMsg("- A terminal window")
           displayMsg("- Some unfinished code")
           displayMsg("- A vague sense of purpose")
