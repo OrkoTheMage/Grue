@@ -99,7 +99,7 @@ export const changeDirectory = (args, currentDir, setCurrentDir, setLogs) => {
         ...prev,
         <div key="resume" className="pdf-container">
           <iframe 
-            src="https://drive.google.com/file/d/1XuhPuQzuN8jNntMIOXAaqMQYS8f8B_tn/preview"
+            src="https://drive.google.com/file/d/1TsSomN2Mof_U2SNwRdYoZ_XIqZjguV5E/preview"
             width="100%"
             height="900px"
             title="Resume PDF"
