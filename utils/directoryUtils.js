@@ -4,9 +4,9 @@
 
 const fileSystem = {
   '/': ['games', 'projects', 'contact'],
-  '/games': ['In-Between', 'Sigil-The-City-of-Doors'],
-  '/contact': ['Resume', 'GitHub', 'contactinfo.md'],
-  '/projects': []
+  '/games': ['in-between', 'sigil-the-city-of-doors'],
+  '/contact': ['resume', 'github', 'contactinfo.md'],
+  '/projects': ['js-presenter', 'cli-presenter', 'orkos-todo-tool' ]
 }
 
 const fileContents = {
@@ -114,6 +114,18 @@ export const changeDirectory = (args, currentDir, setCurrentDir, setLogs) => {
 
     if (fileSystem[newPath]) {
       setCurrentDir(newPath)
+    } else if (currentDir === "/projects") {
+      const normalizedDir = normalizeFileName(dir)
+
+      if (normalizedDir === normalizeFileName('JS-Presenter')) {
+        window.open('https://github.com/OrkoTheMage/JS-Presenter', '_blank')
+      } else if (normalizedDir === normalizeFileName('CLI-Presenter')) {
+        window.open('https://github.com/OrkoTheMage/CLI-Presenter', '_blank')
+      } else if (normalizedDir === normalizeFileName('Orkos-ToDo-Tool') || normalizedDir === normalizeFileName('Okros-ToDo-Tool')) {
+        window.open('https://github.com/OrkoTheMage/Orkos-ToDo-Tool', '_blank')
+      } else {
+        setLogs(prev => [...prev, `Project '${dir}' not found.`])
+      }
     } else if (currentDir === "/contact" && dir.toLowerCase() === "resume") {
       setLogs(prev => [
         ...prev,
