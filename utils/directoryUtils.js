@@ -4,21 +4,33 @@
 
 const fileSystem = {
   '/': ['games', 'projects', 'contact'],
-  '/games': ['In-Between', 'Sigil-The-City-of-Doors'],
-  '/contact': ['Resume', 'GitHub', 'contactinfo.md'],
-  '/projects': []
+  '/games': ['in-between', 'sigil', 'venture'],
+  '/contact': ['resume', 'github', 'contactinfo.md'],
+  '/projects': ['js-presenter', 'cli-presenter', 'orkos-todo-tool']
 }
 
+// Directories that can actually be navigated into with 'cd'
+const navigableDirectories = new Set(['/', '/games', '/projects', '/contact'])
+
 const fileContents = {
-  '/games/in-between': 'A card game with unqiue rules.',
-  '/games/sigil-the-city-of-doors': 'An adventure text game set in the multiverse nexus city of Sigil.',
-  '/games/sigil': 'An adventure text game set in the multiverse nexus city of Sigil.',
-  '/contact/resume': 'My professional resume with experience and skills.',
-  '/contact/github': 'Link to my GitHub profile with various projects and contributions.'
+  '/games/in-between': "A browser card game. Use 'open in-between' to view the game page.",
+  '/games/sigil': "A text adventure set in the city of Sigil. Use 'open sigil' to view the game page.",
+  '/games/venture': "A terminal-based RPG management game. Use 'open venture' to view the game page.",
+  '/contact/resume': "My professional resume. Use 'open resume' to view it.",
+  '/contact/github': "My GitHub profile. Use 'open github' to visit it.",
+  '/projects/js-presenter': "A JavaScript-based presentation tool. Use 'open js-presenter' to view the project.",
+  '/projects/cli-presenter': "A CLI-based presentation tool. Use 'open cli-presenter' to view the project.",
+  '/projects/orkos-todo-tool': "A todo tool built by Orko. Use 'open orkos-todo-tool' to view the project.",
 }
 
 const normalizeFileName = (filename) => {
   return filename.toLowerCase().replace(/-/g, '')
+}
+
+// Returns true if the item in the given directory is a navigable subdirectory
+const isNavigableDirectory = (currentDir, item) => {
+  const path = currentDir === '/' ? `/${item}` : `${currentDir}/${item}`
+  return navigableDirectories.has(path)
 }
 
 export const catFile = (fileName, currentDir, setLogs) => {
@@ -90,7 +102,12 @@ export const listDirectory = (currentDir, setLogs) => {
       ...prev,
       <div>
         {fileSystem[currentDir].map((item, index) => (
-          <span key={index} className={`${item.includes('.') ? 'text-white' : 'text-blue-500'} mr-4`}>{item}</span>
+          <span
+            key={index}
+            className={`${isNavigableDirectory(currentDir, item) ? 'text-blue-500' : 'text-white'} mr-4`}
+          >
+            {item}
+          </span>
         ))}
       </div>
     ])
@@ -114,23 +131,18 @@ export const changeDirectory = (args, currentDir, setCurrentDir, setLogs) => {
 
     if (fileSystem[newPath]) {
       setCurrentDir(newPath)
-    } else if (currentDir === "/contact" && dir.toLowerCase() === "resume") {
-      setLogs(prev => [
-        ...prev,
-        <div key="resume" className="pdf-container">
-          <iframe 
-            src="https://drive.google.com/file/d/1TsSomN2Mof_U2SNwRdYoZ_XIqZjguV5E/preview"
-            width="100%"
-            height="900px"
-            title="Resume PDF"
-            frameBorder="0"
-          ></iframe>
-        </div>
-      ])
-    } else if (currentDir === "/contact" && dir.toLowerCase() === "github") {
-      window.open("https://github.com/OrkoTheMage", "_blank")
     } else {
-      setLogs(prev => [...prev, `Directory '${dir}' not found.`])
+      // Check if it's a file-like item in the current directory
+      const normalizedDir = dir.toLowerCase()
+      const isKnownFile = fileSystem[currentDir]?.some(
+        item => item.toLowerCase() === normalizedDir
+      )
+
+      if (isKnownFile) {
+        setLogs(prev => [...prev, `'${dir}' is not a directory. Use 'open ${dir}' to open it.`])
+      } else {
+        setLogs(prev => [...prev, `Directory '${dir}' not found.`])
+      }
     }
   }
 }

@@ -2,59 +2,56 @@
 // These functions handle user registration, login, and statistics management
 // Used in CLI commands and API interactions
 
-export const registerUser = async (args, displayMsg) => {
-  const name = args[0]
-  const password = args[1]
-
+export const registerUser = async (username, password, displayMsg) => {
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ name, password })
+      body: JSON.stringify({ name: username, password })
     })
 
     const data = await response.json()
-    
-    
-    console.log("Server Response:", data) // 🔍 Log this to see the full error message
-    console.log("HTTP Status:", response.status) // Check the status code
 
     if (!response.ok) {
-      displayMsg(data.error)
+      // Only surface "username taken" — mask all other errors
+      if (response.status === 400 && data.error === "Username already taken") {
+        displayMsg("Username already taken. Please choose a different one.")
+      } else {
+        displayMsg("Registration failed. Please try again.")
+      }
       return
     }
 
-    displayMsg(`Registered ${name} successfully.`)
+    displayMsg(`Registered successfully. Welcome, ${username}!`)
+    displayMsg("You can now log in with 'login <username>'.")
   } catch (error) {
     displayMsg("Error: Registration failed.")
     console.error("Registration error:", error)
   }
 }
 
-export const loginUser = async (args, displayMsg, setCurrentUser) => {
-  const name = args[0]
-  const password = args[1]
-
+export const loginUser = async (username, password, displayMsg, setCurrentUser) => {
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ name, password })
+      body: JSON.stringify({ name: username, password })
     })
 
     const data = await response.json()
 
     if (!response.ok) {
-      displayMsg("Incorrect username or password.")
+      // Generic error — never reveal whether username or password was wrong
+      displayMsg("No matching username and password found.")
       return
     }
 
-    displayMsg(`Welcome back, ${name}`)
-    setCurrentUser(name)
+    displayMsg(`Welcome back, ${username}.`)
+    setCurrentUser(username)
     return data.user
   } catch (error) {
     displayMsg("Error: Login failed.")
@@ -111,7 +108,7 @@ export const getUserStatistics = async (username, displayMsg) => {
   }
 }
 
-// New function to record a discovered secret
+// Record a discovered secret
 export const recordDiscoveredSecret = async (username, secretName) => {
   if (!username) return { success: false, reason: "Not logged in" }
   
@@ -135,7 +132,7 @@ export const recordDiscoveredSecret = async (username, secretName) => {
   }
 }
 
-// New function to get all discovered secrets
+// Get all discovered secrets for a user
 export const getDiscoveredSecrets = async (username) => {
   if (!username) return null
   
@@ -160,4 +157,3 @@ export const getDiscoveredSecrets = async (username) => {
     return null
   }
 }
-

@@ -22,3 +22,23 @@ export const isTablet = () => {
   
   return hasTouch && (isTabletSize || isTabletUserAgent)
 }
+
+// Detects if the device likely uses an on-screen keyboard
+// Returns true for touch devices that would trigger virtual keyboards
+export const usesOnScreenKeyboard = () => {
+  if (typeof window === 'undefined') return false
+  
+  // Primary check: touch capability
+  const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+  
+  // Secondary check: screen size typical of mobile/tablet
+  const isSmallScreen = window.innerWidth < 1024
+  
+  // Check for mobile user agent as fallback
+  const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+  
+  // Coarse pointer indicates touch/pen input (modern CSS media query equivalent)
+  const hasCoarsePointer = window.matchMedia('(pointer: coarse)').matches
+  
+  return hasTouch && (isSmallScreen || isMobileDevice || hasCoarsePointer)
+}

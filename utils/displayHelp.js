@@ -2,59 +2,80 @@
 // These functions render available commands and their descriptions
 // Used in CLI commands "Help" and "HelpMore"
 
-// Helper function to render command entries
-const renderCommands = (commands, setLogs) => {
-  setLogs(prev => [
-    ...prev,
-    ...commands.map(cmd => (
-      <>
-        <span className="text-blue-500">{cmd.command}</span> <span>{cmd.description}</span>
-      </>
-    ))
-  ]);
-};
+// Column widths for alignment
+const CMD_COL = 16
+const SEP = "  "
+
+// Pad command to fixed width, then add description
+const formatCmd = (cmd, desc) => {
+  const padded = cmd.padEnd(CMD_COL)
+  return `${padded}${SEP}${desc}`
+}
 
 export const displayHelp = (setLogs) => {
   const mainCommands = [
-    { command: "register", description: "<username> <password> - Register a new user" },
-    { command: "login", description: "<username> <password> - Log in to an existing account" },
-    { command: "stats", description: "- View your activity statistics" },
-    { command: "ls", description: "- List files in the current directory" },
-    { command: "cd", description: "<directory> - Change the current directory" },
-    { command: "pwd", description: "- Display the current directory" },
-    { command: "cat", description: "<filename> - Display the contents of a file" },
-    { command: "echo", description: "<text> - Print text to the terminal" },
-    { command: "run", description: "<game> - Launch a game" },
-    { command: "clear", description: "- Clear the terminal logs" },
-    { command: "logout", description: "- Log out of the current account" },
-    { command: "reboot", description: "- Restart the terminal" },
-    { command: "helpmore", description: "- Show more commands" },
-    { command: "help", description: "- Show this helpful message" },
-  ];
+    { cmd: "register",  desc: "Register a new account (interactive prompts)" },
+    { cmd: "login",     desc: "Log in to an existing account (interactive prompts)" },
+    { cmd: "logout",    desc: "Log out of the current account" },
+    { cmd: "stats",     desc: "View your activity statistics" },
+    { cmd: "ls",        desc: "List files in the current directory" },
+    { cmd: "cd",        desc: "<directory> Navigate into a directory" },
+    { cmd: "pwd",       desc: "Display the current directory path" },
+    { cmd: "cat",       desc: "<filename>  Display the contents of a file" },
+    { cmd: "open",      desc: "<name>      Open a project, game, or link" },
+    { cmd: "echo",      desc: "<text>      Print text to the terminal" },
+    { cmd: "clear",     desc: "Clear the terminal" },
+    { cmd: "reboot",    desc: "Restart the terminal" },
+    { cmd: "helpmore",  desc: "Show more commands" },
+    { cmd: "help",      desc: "Show this message" },
+  ]
 
-  setLogs(prev => [...prev, <span className="text-blue-500">Available Commands:</span>]);
-  setLogs(prev => [...prev, <div>-------------------------------------------------</div>]);
-  renderCommands(mainCommands, setLogs);
+  setLogs(prev => [...prev, <span className="text-blue-500">Available Commands:</span>])
+  setLogs(prev => [...prev, <div>-------------------------------------------------</div>])
+  mainCommands.forEach(({ cmd, desc }) => {
+    setLogs(prev => [
+      ...prev,
+      <div>
+        <span className="text-blue-500">{cmd.padEnd(CMD_COL)}</span>
+        <span style={{ color: 'rgba(255,255,255,0.5)' }}>{SEP}</span>
+        <span>{desc}</span>
+      </div>
+    ])
+  })
 }
 
 export const displayHelpMore = (setLogs) => {
   const moreCommands = [
-    { command: "hello", description: "- Greet me!" },
-    { command: "whoami", description: "- Display the current user" },
-    { command: "whoareyou", description: "- Learn more about me" },
-    { command: "version", description: "- Display the terminal version" },
-    { command: "ps", description: "- List all running processes" },
-    { command: "kill", description: "<pid> - Terminate a process" },
-    { command: "time", description: "- Display the current date/time" },
-    { command: "magic8ball", description: "- Ask the magic 8-ball a question" },
-    { command: "coinflip", description: "- Flip a coin" },
-    { command: "d20, d12, d10, d8, d6, d4", description: "- Roll a die" },
-    { command: "joke", description: "- Tell a joke" },
-    { command: "passwordgen", description: "- Generate a password" },
-    { command: "...", description: "and more to discover!" },
-  ];
+    { cmd: "hello",                   desc: "Greet me!" },
+    { cmd: "whoami",                  desc: "Display the current user" },
+    { cmd: "whoareyou",               desc: "Learn more about me" },
+    { cmd: "version",                 desc: "Display the terminal version" },
+    { cmd: "ps",                      desc: "List all running processes" },
+    { cmd: "kill",                    desc: "<pid>     Terminate a process" },
+    { cmd: "time",                    desc: "Display the current date/time" },
+    { cmd: "magic8ball",              desc: "Ask the magic 8-ball a question" },
+    { cmd: "coinflip",                desc: "Flip a coin" },
+    { cmd: "d4",        desc: "Roll a 4-sided die" },
+    { cmd: "d6",        desc: "Roll a 6-sided die" },
+    { cmd: "d8",        desc: "Roll an 8-sided die" },
+    { cmd: "d10",       desc: "Roll a 10-sided die" },
+    { cmd: "d12",       desc: "Roll a 12-sided die" },
+    { cmd: "d20",       desc: "Roll a 20-sided die" },
+    { cmd: "joke",                    desc: "Tell a joke" },
+    { cmd: "passwordgen",             desc: "Generate a password" },
+    { cmd: "...",                     desc: "and more to discover!" },
+  ]
 
-  setLogs(prev => [...prev, <span className="text-blue-500">More Commands:</span>]);
-  setLogs(prev => [...prev, <div>-------------------------------------------------</div>]);
-  renderCommands(moreCommands, setLogs);
+  setLogs(prev => [...prev, <span className="text-blue-500">More Commands:</span>])
+  setLogs(prev => [...prev, <div>-------------------------------------------------</div>])
+  moreCommands.forEach(({ cmd, desc }) => {
+    setLogs(prev => [
+      ...prev,
+      <div>
+        <span className="text-blue-500">{cmd.padEnd(CMD_COL)}</span>
+        <span style={{ color: 'rgba(255,255,255,0.5)' }}>{SEP}</span>
+        <span>{desc}</span>
+      </div>
+    ])
+  })
 }

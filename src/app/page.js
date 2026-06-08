@@ -2,16 +2,16 @@
 import { useState, useEffect } from "react"
 import CLI from "@/components/CLI"
 import CRTAnimation from "@/components/CRTAnimation"
-import MobileDisabled from "@/components/MobileDisabled"
-import { isMobile, isTablet } from "../../utils/deviceUtils"
+import MobileFileTree from "@/components/MobileFileTree"
+import { usesOnScreenKeyboard } from "../../utils/deviceUtils"
 
 export default function Home() {
-  const [isMobileDevice, setIsMobileDevice] = useState(false)
+  const [useTouchUI, setUseTouchUI] = useState(false)
 
   useEffect(() => {
-    // Check if device is mobile or tablet
+    // Check if device uses on-screen keyboard
     const checkDevice = () => {
-      setIsMobileDevice(isMobile() || isTablet())
+      setUseTouchUI(usesOnScreenKeyboard())
     }
 
     checkDevice()
@@ -21,9 +21,9 @@ export default function Home() {
     return () => window.removeEventListener('resize', checkDevice)
   }, [])
 
-  // Show mobile disabled message
-  if (isMobileDevice) {
-    return <MobileDisabled />
+  // Show touch-friendly file tree for touch devices
+  if (useTouchUI) {
+    return <MobileFileTree />
   }
 
   // Show normal CLI for desktop
