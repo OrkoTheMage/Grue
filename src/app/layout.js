@@ -1,12 +1,16 @@
 import '../styles/globals.css'
 
+export const metadata = {
+  title: 'Grue',
+  icons: {
+    icon: '/favicon.ico',
+  },
+}
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <title>Grue</title>
-      <body>
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   )
 }

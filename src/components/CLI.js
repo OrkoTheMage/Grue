@@ -1,9 +1,7 @@
 "use client"
 import React, { useEffect, useRef, useState } from "react"
 import { 
-  animateDotsWithMessage, 
   clearLogs,
-  createIframe, 
   generatePrompt, 
   loadUserSecrets, 
   secretDiscovered, 
@@ -11,7 +9,8 @@ import {
   getMagic8BallResponses, 
   stats, 
   ps, 
-  kill 
+  kill,
+  animateDotsWithMessage
 } from "../../utils/CLIUtils"
 import { changeDirectory, listDirectory, catFile } from "../../utils/directoryUtils"
 import { registerUser, loginUser, updateUserStat, } from "../../utils/auth"
@@ -27,6 +26,11 @@ export default function CLI() {
   const [currentUser, setCurrentUser] = useState(null)
   const [currentDir, setCurrentDir] = useState("/")
   const [startTime, setStartTime] = useState(null)
+  
+  // pendingAuth: null | { type: 'login'|'register', stage: 'username'|'password'|'confirm', username?: string, password?: string }
+  // Multi-stage auth flow — mirrors Linux/macOS terminal login behaviour
+  const [pendingAuth, setPendingAuth] = useState(null)
+
   const [foundSecrets, setFoundSecrets] = useState({
     xyzzy: false,
     inventory: false,
@@ -44,13 +48,26 @@ export default function CLI() {
     df: false
   })
   const logsEndRef = useRef(null)
+  const inputRef = useRef(null)
+
+  const startupRan = useRef(false)
 
   // Display startup message
   useEffect(() => {
-    const typeNextMessage = startupMsg(setLogs, () => {
-      setStartupComplete(true)    })
-    typeNextMessage()
+    // Guard against React 18 Strict Mode double-invocation and any accidental
+    // remounts. useRef persists across the fake unmount/remount cycle so the
+    // second pass sees startupRan.current === true and bails out immediately.
+    if (startupRan.current) return
+    startupRan.current = true
+
+    const { start, cleanup } = startupMsg(setLogs, () => {
+      setStartupComplete(true)
+    })
+    start()
     setStartTime(new Date())
+
+    // Cancel any in-flight timers if the component genuinely unmounts
+    return cleanup
   }, [])
 
   // Fetch discovered secrets when user logs in
@@ -67,14 +84,76 @@ export default function CLI() {
     
   const displayMsg = (msg) => {
     if (React.isValidElement(msg)) {
-    setLogs(prev => [...prev, msg]) 
-          } else {
-    setLogs(prev => [...prev, String(msg)])
+      setLogs(prev => [...prev, msg]) 
+    } else {
+      setLogs(prev => [...prev, String(msg)])
     }
   }
   
   const handleCommand = (event) => {
-    if (event.key === "Enter" && input.trim()) {
+    if (event.key === "Enter") {
+      // Empty Enter during an auth prompt cancels the flow
+      if (pendingAuth && !input.trim()) {
+        displayMsg("Cancelled.")
+        setPendingAuth(null)
+        setInput("")
+        return
+      }
+
+      if (!input.trim()) return
+
+      // ===== PENDING AUTH (multi-stage) =====
+      if (pendingAuth) {
+        const value = input.trim()
+
+        if (pendingAuth.stage === 'username') {
+          setLogs(prev => [
+            ...prev,
+            <div className="text-green-400 p-4">
+              {pendingAuth.type === 'login' ? 'login:' : 'Username:'} {value}
+            </div>
+          ])
+          setPendingAuth({ ...pendingAuth, stage: 'password', username: value })
+          setHistoryIndex(commandHistory.length)
+          setInput("")
+          return
+        }
+
+        if (pendingAuth.stage === 'password') {
+          setLogs(prev => [
+            ...prev,
+            <div className="text-green-400 p-4">Password: ••••••••</div>
+          ])
+          if (pendingAuth.type === 'login') {
+            loginUser(pendingAuth.username, value, displayMsg, setCurrentUser)
+            setPendingAuth(null)
+          } else {
+            setPendingAuth({ ...pendingAuth, stage: 'confirm', password: value })
+          }
+          setHistoryIndex(commandHistory.length)
+          setInput("")
+          return
+        }
+
+        if (pendingAuth.stage === 'confirm') {
+          setLogs(prev => [
+            ...prev,
+            <div className="text-green-400 p-4">Confirm password: ••••••••</div>
+          ])
+          if (value !== pendingAuth.password) {
+            displayMsg("Passwords do not match. Please try again.")
+            setPendingAuth({ type: 'register', stage: 'password', username: pendingAuth.username })
+          } else {
+            registerUser(pendingAuth.username, value, displayMsg)
+            setPendingAuth(null)
+          }
+          setHistoryIndex(commandHistory.length)
+          setInput("")
+          return
+        }
+      }
+
+      // ===== NORMAL COMMAND HANDLING =====
       const command = input.trim().split(" ")[0]
       const args = input.trim().split(" ").slice(1)
   
@@ -86,9 +165,13 @@ export default function CLI() {
       switch (command) {
         // ===== USER ACCOUNT COMMANDS =====
         case "login":
-          args.length < 2
-            ? displayMsg("Usage: login <username> <password>")
-            : loginUser(args, displayMsg, setCurrentUser)
+          if (currentUser) {
+            displayMsg(`Already logged in as "${currentUser}". Use 'logout' first.`)
+          } else if (args.length === 0) {
+            setPendingAuth({ type: 'login', stage: 'username' })
+          } else {
+            setPendingAuth({ type: 'login', stage: 'password', username: args[0] })
+          }
           break
 
         case "logout":
@@ -98,9 +181,13 @@ export default function CLI() {
           break
 
         case "register":
-          args.length < 2
-            ? displayMsg("Usage: register <username> <password>")
-            : registerUser(args, displayMsg)
+          if (currentUser) {
+            displayMsg(`Already logged in as "${currentUser}". Please logout first.`)
+          } else if (args.length === 0) {
+            setPendingAuth({ type: 'register', stage: 'username' })
+          } else {
+            setPendingAuth({ type: 'register', stage: 'password', username: args[0] })
+          }
           break
 
         case "stats":
@@ -157,16 +244,16 @@ export default function CLI() {
         case "v":
         case "--v":
         case "--version":
-          displayMsg("Grue.sh v1.0.0")
+          displayMsg("Grue.sh v1.1.0")
           break
 
         case "ps":
           ps(startTime, displayMsg)
           break
 
-          case "kill":
-            kill(args, displayMsg, setLogs)
-            break        
+        case "kill":
+          kill(args, displayMsg, setLogs)
+          break        
 
         case "df":
         case "du":
@@ -176,8 +263,6 @@ export default function CLI() {
           displayMsg("...for now.")
           currentUser && secretDiscovered(currentUser, 'df', foundSecrets, setFoundSecrets, displayMsg)
           break
-        
-        
 
         // ===== DIRECTORY/FILE COMMANDS =====
         case "cat":
@@ -259,48 +344,74 @@ export default function CLI() {
             )
           break
 
-        // ===== GAME COMMANDS =====  
+        // ===== OPEN COMMAND (projects, games & contact) =====
         case "open":
-        case "run":
-        case "play":
-        case "start":
-        case "launch":
-          if (currentDir === "/games") {
-            const gameName = args[0]?.toLowerCase()
-            if (!gameName) {
-              displayMsg("Usage: run <game-name>")
-              break
-            }
-        
-            switch (gameName) {
-              case "in-between":
-              case "inbetween":
-                animateDotsWithMessage("Launching Game", 4, setLogs, () => {
-                  setLogs(prev => [
-                    ...prev,
-                    createIframe("inbetween", "https://homies-llc.github.io/In-Between/", "In Between")
-                  ])
-                  currentUser && updateUserStat(currentUser, "gamesPlayed")
-                })
-                break
+          if (!args[0]) {
+            displayMsg("Usage: open <name>")
+            break
+          }
+          {
+            const target = args[0].toLowerCase()
+            const base = process.env.NEXT_PUBLIC_API_URL
 
-              case "sigil":
-              case "sigil-the-city-of-doors":
-              case "sigilthecityofdoors":
-                animateDotsWithMessage("Launching Game", 4, setLogs, () => {
-                  setLogs(prev => [
-                    ...prev,
-                    createIframe("sigil", "https://orkothemage.github.io/Sigil-The-City-of-Doors/sigil.html", "Sigil")
-                  ])
-                  currentUser && updateUserStat(currentUser, "gamesPlayed")
+            if (currentDir === "/projects") {
+              const projectUrls = {
+                "js-presenter":    `${base}/js-presenter`,
+                "cli-presenter":   `${base}/cli-presenter`,
+                "orkos-todo-tool": `${base}/orkos-todo-tool`,
+              }
+              const normalizedTarget = target.replace(/-/g, "")
+              const matchedKey = Object.keys(projectUrls).find(
+                k => k.replace(/-/g, "") === normalizedTarget
+              )
+              if (matchedKey) {
+                animateDotsWithMessage(`Opening ${matchedKey}`, 3, setLogs, () => {
+                  window.open(projectUrls[matchedKey], "_blank")
                 })
-                break
+              } else {
+                displayMsg(`No project found with the name "${args[0]}".`)
+                displayMsg("Available projects: js-presenter, cli-presenter, orkos-todo-tool")
+              }
 
-              default:
-                displayMsg(`No game found with the name "${args[0]}"`)
+            } else if (currentDir === "/contact") {
+              if (target === "github") {
+                animateDotsWithMessage("Opening GitHub", 3, setLogs, () => {
+                  window.open("https://github.com/OrkoTheMage", "_blank")
+                })
+              } else if (target === "resume") {
+                animateDotsWithMessage("Opening resume", 3, setLogs, () => {
+                  window.open(`${base}/resume`, "_blank")
+                })
+              } else if (target === "contactinfo.md") {
+                displayMsg("Use 'cat contactinfo.md' to read contact info directly in the terminal.")
+              } else {
+                displayMsg(`No file found with the name "${args[0]}".`)
+                displayMsg("Available files: resume, github, contactinfo.md")
+              }
+
+            } else if (currentDir === "/games") {
+              const gameUrls = {
+                "in-between":   `${base}/in-between`,
+                "sigil":         `${base}/sigil`,
+                "venture":       `${base}/venture`,
+              }
+              const normalizedTarget = target.replace(/-/g, "")
+              const matchedKey = Object.keys(gameUrls).find(
+                k => k.replace(/-/g, "") === normalizedTarget
+              )
+              if (matchedKey) {
+                animateDotsWithMessage(`Opening ${matchedKey}`, 3, setLogs, () => {
+                  window.open(gameUrls[matchedKey], "_blank")
+                })
+              } else {
+                displayMsg(`No game found with the name "${args[0]}".`)
+                displayMsg("Available games: in-between, sigil, venture")
+              }
+
+            } else {
+              displayMsg("Navigate to /projects, /games, or /contact to use 'open'.")
+              displayMsg("Usage: cd projects  |  cd games  |  cd contact")
             }
-          } else {
-            displayMsg("Games can only be run from the /games directory")
           }
           break
 
@@ -361,8 +472,8 @@ export default function CLI() {
         case "south":
         case "w":
         case "west":
-          displayMsg("You cannot go that anywhere.")
-          displayMsg("..You are stuck in the darkness")
+          displayMsg("You cannot go anywhere.")
+          displayMsg("..You are stuck in the darkness.")
           currentUser && secretDiscovered(currentUser, 'direction', foundSecrets, setFoundSecrets, displayMsg)
           break
 
@@ -417,25 +528,45 @@ export default function CLI() {
           break
       }
   
-      setCommandHistory([...commandHistory, input.trim()])
-      setHistoryIndex(commandHistory.length)
+      const newHistory = [...commandHistory, input.trim()]
+      setCommandHistory(newHistory)
+      setHistoryIndex(newHistory.length)
       setInput("")
     }
     
-    event.key === "ArrowUp"
-      ? historyIndex > 0 && (
-          setHistoryIndex(historyIndex - 1),
-          setInput(commandHistory[historyIndex - 1])
-        )
-      : event.key === "ArrowDown" && (
-          historyIndex < commandHistory.length - 1
-            ? (setHistoryIndex(historyIndex + 1), setInput(commandHistory[historyIndex]))
-            : (setHistoryIndex(commandHistory.length), setInput(""))
-        )
+    if (event.key === "ArrowUp") {
+      if (historyIndex > 0) {
+        const prev = historyIndex - 1
+        setHistoryIndex(prev)
+        setInput(commandHistory[prev])
+        requestAnimationFrame(() => {
+          if (inputRef.current) {
+            const len = commandHistory[prev].length
+            inputRef.current.setSelectionRange(len, len)
+          }
+        })
+      }
+    } else if (event.key === "ArrowDown") {
+      if (historyIndex < commandHistory.length) {
+        const next = historyIndex + 1
+        const val = next >= commandHistory.length ? "" : commandHistory[next]
+        setHistoryIndex(next)
+        setInput(val)
+        requestAnimationFrame(() => {
+          if (inputRef.current) {
+            const len = val.length
+            inputRef.current.setSelectionRange(len, len)
+          }
+        })
+      }
+    }
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen text-white font-mono">
+    <div
+      className="flex items-center justify-center min-h-screen text-white font-mono"
+      onClick={() => inputRef.current?.focus()}
+    >
       <div className="w-full max-w-3xl p-6">
         <div className="h-full w-full">
           {logs.map((log, index) => (
@@ -445,18 +576,57 @@ export default function CLI() {
           <div className="flex items-center text-2xl pt-12">
             {startupComplete && (
               <>
-                <span className="pr-2 text-2xl">{generatePrompt(currentUser)}</span>
-                <span className="text-blue-500 mr-2">~{currentDir}</span>
-                <span className="text-white mr-2">$</span>
-            <input
-              type="text"
-              className="bg-transparent border-none outline-none text-white w-full text-2xl caret-white"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleCommand}
-              autoFocus
-            />
-            </>
+                {pendingAuth ? (
+                  // Multi-stage auth prompt
+                  pendingAuth.stage === 'username' ? (
+                    <>
+                      <span className="pr-2 text-2xl text-green-400">
+                        {pendingAuth.type === 'login' ? 'login:' : 'Username:'}
+                      </span>
+                      <input
+                        type="text"
+                        ref={inputRef}
+                        className="bg-transparent border-none outline-none text-white w-full text-2xl font-mono cli-input"
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        onKeyDown={handleCommand}
+                        autoFocus
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <span className="pr-2 text-2xl text-green-400">
+                        {pendingAuth.stage === 'confirm' ? 'Confirm password:' : 'Password:'}
+                      </span>
+                      <input
+                        type="password"
+                        ref={inputRef}
+                        className="bg-transparent border-none outline-none text-white w-full text-2xl font-mono cli-input"
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        onKeyDown={handleCommand}
+                        autoFocus
+                      />
+                    </>
+                  )
+                ) : (
+                  // Normal command mode
+                  <>
+                    <span className="pr-2 text-2xl">{generatePrompt(currentUser)}</span>
+                    <span className="text-blue-500 mr-2">~{currentDir}</span>
+                    <span className="text-white mr-2">$</span>
+                    <input
+                      type="text"
+                      ref={inputRef}
+                      className="bg-transparent border-none outline-none text-white w-full text-2xl font-mono cli-input"
+                      value={input}
+                      onChange={(e) => setInput(e.target.value)}
+                      onKeyDown={handleCommand}
+                      autoFocus
+                    />
+                  </>
+                )}
+              </>
             )}
           </div>
         </div>

@@ -3,6 +3,7 @@
 body {
   margin: 0;
   padding: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 /* CRT animation container */
@@ -53,4 +54,302 @@ body {
 /* Hides the scrollbar */
 ::-webkit-scrollbar {
   display: none;
+}
+
+/* CLI input — block caret */
+.cli-input {
+  caret-color: white;
+  caret-shape: block;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Project page styles
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* Neon green glow — mirrors the GRUE logo glow but in green */
+@keyframes neonGlow {
+  from {
+    text-shadow:
+      0 0 10px rgba(57, 255, 20, 0.6),
+      0 0 20px rgba(57, 255, 20, 0.4),
+      0 0 30px rgba(57, 255, 20, 0.2);
+  }
+  to {
+    text-shadow:
+      0 0 15px rgba(57, 255, 20, 0.9),
+      0 0 25px rgba(57, 255, 20, 0.6),
+      0 0 40px rgba(57, 255, 20, 0.3);
+  }
+}
+
+.neon-title {
+  color: #39ff14;
+  animation: neonGlow 1.5s ease-in-out infinite alternate;
+}
+
+/* Pixel / retro font — loaded via next/font/google in the project layout */
+.pixel-font {
+  font-family: var(--font-press-start), 'Press Start 2P', monospace;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeSpeed;
+  letter-spacing: 0.07em;
+}
+
+.pixel-font-small {
+  font-family: var(--font-press-start), 'Press Start 2P', monospace;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeSpeed;
+  letter-spacing: 0.01em;
+}
+
+/* Earth palette halftone overlay */
+:root {
+  --bg-900: #050608;
+  --bg-800: #090b0d;
+}
+
+/* helpers to apply backgrounds easily */
+.bg-canvas { background: #050608; }
+.bg-elev { background: var(--bg-800); }
+
+.site-container {
+  max-width: 1960px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+:root {
+  --earth-beige: #F7EEE1;
+  --earth-blue: #606781;
+  --earth-olive: #474037;
+}
+
+.halftone-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.halftone-overlay::before,
+.halftone-overlay::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+/* White halftone dots - brighten the background */
+.halftone-overlay::before {
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,0.22) 1px, transparent 1px),
+    radial-gradient(circle, rgba(255,255,255,0.14) 1px, transparent 1px);
+  background-size: 8px 8px, 16px 16px;
+  background-position: 0 0, 6px 8px;
+  mix-blend-mode: screen;
+  opacity: 0.42;
+  transform: translateZ(0);
+  will-change: transform, opacity;
+  animation: halftoneShift 3.2s steps(6, end) infinite;
+}
+@keyframes halftoneShift {
+  0%   { transform: translate(0, 0);          opacity: 0.38; }
+  25%  { transform: translate(18px, 6px);     opacity: 0.52; }
+  50%  { transform: translate(-12px, -10px);  opacity: 0.42; }
+  75%  { transform: translate(10px, -4px);    opacity: 0.50; }
+  100% { transform: translate(0, 0);          opacity: 0.38; }
+}
+/* Subtle flicker layer */
+.halftone-overlay::after {
+  background-color: rgba(250,250,248,0.04);
+  mix-blend-mode: screen;
+  opacity: 0.35;
+  will-change: background-color, opacity;
+  animation: halftoneFlicker 2.2s steps(6, end) infinite;
+}
+@keyframes halftoneFlicker {
+  0%   { background-color: rgba(255,255,255,0.02); opacity: 0.55; }
+  12%  { background-color: rgba(230,230,230,0.03); opacity: 0.60; }
+  25%  { background-color: rgba(200,200,200,0.035); opacity: 0.45; }
+  37%  { background-color: rgba(220,220,220,0.03); opacity: 0.50; }
+  50%  { background-color: rgba(180,180,180,0.04);  opacity: 0.60; }
+  62%  { background-color: rgba(240,240,240,0.02); opacity: 0.50; }
+  75%  { background-color: rgba(210,210,210,0.035); opacity: 0.58; }
+  87%  { background-color: rgba(230,230,230,0.025); opacity: 0.48; }
+  100% { background-color: rgba(255,255,255,0.02); opacity: 0.55; }
+}
+
+/* Project page layout helpers */
+.project-page-container {
+  max-width: 1000px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 2.5rem 2rem 4rem;
+  box-sizing: border-box;
+}
+
+.project-divider {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.8);
+  margin: 3rem 0;
+}
+
+.content-placeholder {
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.3);
+  font-family: var(--font-press-start), 'Press Start 2P', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.text-section-box {
+  background: #000;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 4px;
+  padding: 1.5rem;
+}
+
+/* Masonry grid */
+.my-masonry-grid {
+  display: flex;
+  margin-left: -12px;
+  width: auto;
+}
+.my-masonry-grid_column {
+  padding-left: 12px;
+  background-clip: padding-box;
+}
+.my-masonry-grid_column > div {
+  margin-bottom: 12px;
+}
+
+/* Screenshot hover effect */
+.screenshot-item {
+  cursor: pointer;
+  margin-bottom: 12px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.screenshot-item:hover img {
+  transform: scale(1.05);
+}
+.screenshot-item img {
+  transition: transform 150ms ease;
+}
+
+/* ── Modal controls ──────────────────────────────────────────────────────── */
+.modal-overlay {
+  position:       fixed;
+  inset:          0;
+  z-index:        9999;
+  background:     rgba(0,0,0,0.92);
+  display:        flex;
+  align-items:    center;
+  justify-content: center;
+}
+
+.modal-content {
+  position:   relative;
+  max-width:  90vw;
+  max-height: 90vh;
+  display:    flex;
+  flex-direction: column;
+  align-items: center;
+  gap:         1rem;
+}
+
+.modal-img {
+  max-width:     90vw;
+  max-height:    80vh;
+  object-fit:    contain;
+  border-radius: 6px;
+  display:       block;
+  box-shadow:     0 0 60px rgba(0,0,0,0.8);
+}
+
+.modal-btn {
+  display:        flex;
+  align-items:    center;
+  justify-content: center;
+  width:          4rem;
+  height:         4rem;
+  background:     #000;
+  border:         3px solid #fff;
+  border-radius:  3px;
+  color:          #fff;
+  font-family:    var(--font-press-start), 'Press Start 2P', monospace;
+  font-size:      1.05rem;
+  letter-spacing: 0;
+  line-height:    1;
+  cursor:         pointer;
+  transition:     background 100ms ease, color 100ms ease;
+}
+.modal-btn:hover {
+  background: #fff;
+  color:      #000;
+}
+
+.modal-tracker {
+  display:        inline-block;
+  border:         3px solid #fff;
+  border-radius:  3px;
+  padding:        0.5rem 1rem;
+  background:     #000;
+  color:          #fff;
+  font-family:    var(--font-press-start), 'Press Start 2P', monospace;
+  font-size:      0.7rem;
+  letter-spacing: 0.06em;
+  line-height:    1;
+  user-select:    none;
+}
+
+/* Mobile controls - row at bottom */
+.modal-controls-mobile {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .modal-btn {
+    width:     2.6rem;
+    height:    2.6rem;
+    font-size: 0.6rem;
+    border-width: 2px;
+  }
+  .modal-tracker {
+    font-size:    0.45rem;
+    padding:      0.35rem 0.65rem;
+    border-width: 2px;
+  }
+  .modal-controls-mobile {
+    display:        flex;
+    gap:            0.5rem;
+  }
+  .modal-btn-mobile {
+    width:     2.6rem;
+    height:    2.6rem;
+    font-size: 0.6rem;
+    border-width: 2px;
+  }
+}
+
+.resume-btn:hover {
+  background: #fff !important;
+  color: #000 !important;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .halftone-overlay::before,
+  .halftone-overlay::after { animation: none !important; }
+  .neon-title { animation: none; text-shadow: 0 0 8px rgba(57,255,20,0.5); }
 }

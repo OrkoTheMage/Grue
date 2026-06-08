@@ -40,5 +40,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# gitignore
-.gitignore
+# npm lockfile
+package-lock.json
+
+# dev / planning notes
+/*.txt
