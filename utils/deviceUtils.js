@@ -28,17 +28,17 @@ export const isTablet = () => {
 export const usesOnScreenKeyboard = () => {
   if (typeof window === 'undefined') return false
   
-  // Primary check: touch capability
-  const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
-  
-  // Secondary check: screen size typical of mobile/tablet
+  // Use screen width as primary indicator
   const isSmallScreen = window.innerWidth < 1024
   
-  // Check for mobile user agent as fallback
+  // Check for mobile user agent
   const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
   
-  // Coarse pointer indicates touch/pen input (modern CSS media query equivalent)
+  // Touch capability check
+  const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+  
+  // Coarse pointer indicates touch/pen input
   const hasCoarsePointer = window.matchMedia('(pointer: coarse)').matches
   
-  return hasTouch && (isSmallScreen || isMobileDevice || hasCoarsePointer)
+  return isSmallScreen || isMobileDevice || hasTouch || hasCoarsePointer
 }

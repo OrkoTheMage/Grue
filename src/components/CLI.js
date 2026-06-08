@@ -244,7 +244,7 @@ export default function CLI() {
         case "v":
         case "--v":
         case "--version":
-          displayMsg("Grue.sh v1.1.0")
+          displayMsg("Grue.sh v1.1.1")
           break
 
         case "ps":

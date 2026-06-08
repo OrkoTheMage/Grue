@@ -1,6 +1,8 @@
 "use client"
-import React, { useState, useEffect, useCallback } from "react"
+import React, { useState } from "react"
 import CRTAnimation from "./CRTAnimation"
+import projects from "../data/projects"
+import games from "../data/games"
 
 export default function MobileFileTree() {
   const [currentDir, setCurrentDir] = useState("/")
@@ -11,32 +13,40 @@ export default function MobileFileTree() {
 
   const directories = {
     "/": [
-      { name: "projects", type: "dir" },
-      { name: "games", type: "dir" },
-      { name: "contact", type: "dir" },
+      { name: "projects", type: "dir", target: "/projects", slug: "projects" },
+      { name: "games", type: "dir", target: "/games", slug: "games" },
+      { name: "contact", type: "dir", target: "/contact", slug: "contact" },
     ],
     "/projects": [
-      { name: "js-presenter", type: "link", url: `${baseUrl}/js-presenter` },
-      { name: "cli-presenter", type: "link", url: `${baseUrl}/cli-presenter` },
-      { name: "orkos-todo-tool", type: "link", url: `${baseUrl}/orkos-todo-tool` },
-      { name: "..", type: "dir", target: "/" },
+      ...Object.values(projects).map(p => ({
+        name: p.name,
+        slug: p.slug,
+        type: "link",
+        url: `${baseUrl}/${p.slug}`,
+        description: p.tagline,
+      })),
+      { name: "return", type: "back", target: "/", slug: ".." },
     ],
     "/games": [
-      { name: "in-between", type: "play", url: "https://homies-llc.github.io/In-Between/" },
-      { name: "sigil", type: "play", url: "https://orkothemage.github.io/Sigil-The-City-of-Doors/sigil.html" },
-      { name: "venture", type: "link", url: `${baseUrl}/venture` },
-      { name: "..", type: "dir", target: "/" },
+      ...Object.values(games).map(g => ({
+        name: g.name,
+        slug: g.slug,
+        type: "link",
+        url: g.playUrl || `${baseUrl}/${g.slug}`,
+        description: g.tagline,
+      })),
+      { name: "return", type: "back", target: "/", slug: ".." },
     ],
     "/contact": [
-      { name: "github", type: "link", url: "https://github.com/OrkoTheMage" },
-      { name: "resume", type: "link", url: `${baseUrl}/resume` },
-      { name: "contactinfo.md", type: "file", content: "Email: contact@grue.sh\nGitHub: github.com/OrkoTheMage" },
-      { name: "..", type: "dir", target: "/" },
+      { name: "GitHub", slug: "github", type: "link", url: "https://github.com/OrkoTheMage", description: "View my GitHub profile" },
+      { name: "Resume", slug: "resume", type: "link", url: `${baseUrl}/resume`, description: "View my resume" },
+      { name: "contactinfo.md", type: "file", slug: "contactinfo.md", content: "Email: contact@grue.sh\nGitHub: github.com/OrkoTheMage" },
+      { name: "return", type: "back", target: "/", slug: ".." },
     ],
   }
 
   const handleItemClick = (item) => {
-    if (item.type === "dir") {
+    if (item.type === "dir" || item.type === "back") {
       setCurrentDir(item.target)
     } else if (item.type === "link" || item.type === "play") {
       setSelectedItem(item)
@@ -60,6 +70,7 @@ export default function MobileFileTree() {
       case "link": return "[LNK]"
       case "play": return "[PLY]"
       case "file": return "[TXT]"
+      case "back": return "[..]"
       default: return "[   ]"
     }
   }
@@ -75,16 +86,18 @@ export default function MobileFileTree() {
   }
 
   return (
-    <div className="relative min-h-screen text-white" style={{ minHeight: '100vh', minHeight: '100dvh' }}>
-      <div className="crt-animation" style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%' }}>
+    <div className="relative min-h-screen bg-black text-white" style={{ minHeight: '100vh', minHeight: '100dvh' }}>
+      {/* CRT Animation */}
+      <div className="crt-animation">
         <CRTAnimation />
       </div>
 
+      {/* Content */}
       <div className="cli-container" style={{ position: 'relative', zIndex: 2 }}>
         <div className="w-full max-w-2xl mx-auto p-4 pt-8">
           {/* Header */}
           <div className="text-green-400 text-lg mb-4 font-mono">
-            grue.sh mobile explorer
+            grue.sh
           </div>
 
           {/* Path */}
@@ -98,10 +111,17 @@ export default function MobileFileTree() {
               <div
                 key={index}
                 onClick={() => handleItemClick(item)}
-                className={`flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-white/10 transition-colors ${getItemColor(item.type)}`}
+                className={`flex flex-col gap-1 p-3 rounded cursor-pointer hover:bg-white/10 transition-colors ${getItemColor(item.type)}`}
               >
-                <span className="font-mono text-sm">{getIcon(item.type)}</span>
-                <span className="font-mono text-sm">{item.name}</span>
+                <div className="flex items-center gap-3">
+                  <span className="font-mono text-sm">{getIcon(item.type)}</span>
+                  <span className="font-mono text-sm font-bold">{item.name}</span>
+                </div>
+                {item.description && (
+                  <div className="text-xs opacity-70 pl-9 font-mono truncate">
+                    {item.description}
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -111,8 +131,9 @@ export default function MobileFileTree() {
       {/* Modal */}
       {showModal && selectedItem && (
         <div
-          className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 bg-black/90 z-50 p-4"
           onClick={closeModal}
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
         >
           <div
             className="bg-black border border-white rounded-lg p-6 max-w-sm w-full"
@@ -129,11 +150,16 @@ export default function MobileFileTree() {
               </>
             ) : (
               <>
-                <div className="text-green-400 font-mono text-sm mb-4">
+                <div className="text-green-400 font-mono text-lg mb-2">
                   {selectedItem.name}
                 </div>
-                <div className="text-gray-400 font-mono text-xs mb-4">
-                  {selectedItem.type === "play" ? "Opens game in browser" : "Opens page"}
+                {selectedItem.description && (
+                  <div className="text-gray-400 font-mono text-xs mb-4">
+                    {selectedItem.description}
+                  </div>
+                )}
+                <div className="text-gray-500 font-mono text-xs mb-4">
+                  [{selectedItem.type === "play" ? "PLAY" : "OPEN"}] {selectedItem.type === "play" ? "Opens game in browser" : "Opens project page"}
                 </div>
                 <div className="flex gap-3">
                   <button
