@@ -11,6 +11,7 @@ const projects = {
     github:      "https://github.com/OrkoTheMage/js-presenter",
     liveUrl:     null,
     video:       null,      // replace with a YouTube/Vimeo embed URL when ready
+    localVideo:  '/projects/js-presenter/demo.mp4',
     screenshots: [
       { src: '/projects/js-presenter/screenshot-1.png', alt: 'JS Presenter screenshot 1' },
       { src: '/projects/js-presenter/screenshot-2.png', alt: 'JS Presenter screenshot 2' },
@@ -33,6 +34,7 @@ const projects = {
     github:      "https://github.com/OrkoTheMage/cli-presenter",
     liveUrl:     null,
     video:       null,
+    localVideo:  '/projects/cli-presenter/demo.mp4',
     screenshots: [
       { src: '/projects/cli-presenter/screenshot-1.png', alt: 'CLI Presenter screenshot 1' },
       { src: '/projects/cli-presenter/screenshot-2.png', alt: 'CLI Presenter screenshot 2' },

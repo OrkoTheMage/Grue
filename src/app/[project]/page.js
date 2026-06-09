@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import projects from '../../data/projects'
 import games from '../../data/games'
 import ScreenshotGallery from '../../components/ScreenshotGallery'
+import ProjectVideo from '../../components/ProjectVideo'
 
 // ── Tag colour map ────────────────────────────────────────────────────────────
 const PROJECT_TAG_COLORS = {
@@ -13,8 +14,8 @@ const PROJECT_TAG_COLORS = {
   'Vite':          { bg: '#646cff', color: '#fff' },
   'Node.JS':       { bg: '#3c873a', color: '#fff' },
   'Node.js':       { bg: '#3c873a', color: '#fff' },
-  'CLI':           { bg: '#2b2b2b', color: '#f7f7f7', border: 'rgba(255,255,255,0.2)' },
-  'ASCII':         { bg: '#1a1a1a', color: '#e0e0e0', border: 'rgba(255,255,255,0.15)' },
+  'CLI':           { bg: '#2b2b2b', color: '#fff', border: 'rgba(255,255,255,0.25)' },
+  'ASCII':         { bg: '#1a1a1a', color: '#fff', border: 'rgba(255,255,255,0.25)' },
   'Python':        { bg: '#3572A5', color: '#fff' },
   'Local Storage': { bg: '#ff7043', color: '#fff' },
   'Markdown':      { bg: '#4a90d9', color: '#fff' },
@@ -29,8 +30,8 @@ const GAME_TAG_COLORS = {
   'Multiplayer':    { bg: '#007bff', color: '#fff' },
   'Text Adventure': { bg: '#d39e00', color: '#fff' },
   'RPG':            { bg: '#dc3545', color: '#fff' },
-  'CLI':            { bg: '#2b2b2b', color: '#f7f7f7' },
-  'ASCII':          { bg: '#1a1a1a', color: '#e0e0e0' },
+  'CLI':            { bg: '#2b2b2b', color: '#fff', border: 'rgba(255,255,255,0.25)' },
+  'ASCII':          { bg: '#1a1a1a', color: '#fff', border: 'rgba(255,255,255,0.25)' },
   'Management':     { bg: '#6f42c1', color: '#fff' },
   'Idle Game':      { bg: '#007bff', color: '#fff' },
   'CPU':            { bg: '#dc3545', color: '#fff' },
@@ -39,7 +40,7 @@ const GAME_TAG_COLORS = {
   'WIP':            { bg: '#e83e8c', color: '#1a1a00' },
 }
 
-const DEFAULT_TAG = { bg: 'rgba(255,255,255,0.1)', color: '#ffffff', border: 'rgba(255,255,255,0.2)' }
+const DEFAULT_TAG = { bg: 'rgba(255,255,255,0.1)', color: '#ffffff', border: 'rgba(255,255,255,0.25)' }
 
 // ── GitHub SVG mark ───────────────────────────────────────────────────────────
 const GitHubIcon = () => (
@@ -211,6 +212,8 @@ export default async function ItemPage({ params }) {
         </div>
         <style>{`.github-button:hover { background: #ffffff !important; color: #24292e !important; }`}</style>
         <style>{`.play-button:hover { background: rgba(40, 167, 69, 1) !important; }`}</style>
+        <style>{`.demo-video:hover { transform: scale(1.02); }`}</style>
+        <style>{`.demo-video { transition: transform 150ms ease; }`}</style>
       </header>
 
       <hr className="project-divider" />
@@ -243,7 +246,9 @@ export default async function ItemPage({ params }) {
               Video Demo
             </h2>
 
-            {item.video ? (
+            {item.localVideo ? (
+              <ProjectVideo src={item.localVideo} type={item.localVideo.endsWith('.webm') ? 'video/webm' : 'video/mp4'} />
+            ) : item.video ? (
               <div style={{ borderRadius: '8px', overflow: 'hidden', maxWidth: '800px', aspectRatio: '16/9' }}>
                 <iframe
                   src={item.video}
@@ -294,7 +299,18 @@ export default async function ItemPage({ params }) {
               Video Demo
             </h2>
 
-            {item.video ? (
+            {item.localVideo ? (
+              <video
+                controls
+                autoPlay
+                muted
+                loop
+                style={{ borderRadius: '8px', maxWidth: '800px', width: '100%' }}
+              >
+                <source src={item.localVideo} type="video/webm" />
+                Your browser does not support the video tag.
+              </video>
+            ) : item.video ? (
               <div style={{ borderRadius: '8px', overflow: 'hidden', maxWidth: '800px', aspectRatio: '16/9' }}>
                 <iframe
                   src={item.video}

@@ -138,7 +138,7 @@ export default function CLI() {
         if (pendingAuth.stage === 'confirm') {
           setLogs(prev => [
             ...prev,
-            <div className="text-green-400 p-4">Confirm password: ••••••••</div>
+            <div className="text-green-400 p-4">word: ••••••••</div>
           ])
           if (value !== pendingAuth.password) {
             displayMsg("Passwords do not match. Please try again.")
