@@ -138,7 +138,7 @@ export default function CLI() {
         if (pendingAuth.stage === 'confirm') {
           setLogs(prev => [
             ...prev,
-            <div className="text-green-400 p-4">Confirm password: ••••••••</div>
+            <div className="text-green-400 p-4">word: ••••••••</div>
           ])
           if (value !== pendingAuth.password) {
             displayMsg("Passwords do not match. Please try again.")
@@ -244,7 +244,7 @@ export default function CLI() {
         case "v":
         case "--v":
         case "--version":
-          displayMsg("Grue.sh v1.1.1")
+          displayMsg("Grue.sh v1.1.2")
           break
 
         case "ps":

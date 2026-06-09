@@ -40,7 +40,7 @@ const games = {
     name:        "Venture",
     tagline:     "A terminal-based RPG management game.",
     description: "Recruit heroes, send them on quests, manage your roster, and reclaim your ancestral estate. A CLI-based roguelike management game where you build your adventuring company from the ground up.",
-    tags:        ["Python", "CLI", "RPG", "Management", "Idle Game"],
+    tags:        ["Python", "CLI", "ASCII", "RPG", "Management", "Idle Game", ],
     github:      "https://github.com/OrkoTheMage/Venture",
     playUrl:     null,
     video:       null,
