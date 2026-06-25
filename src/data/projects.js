@@ -54,11 +54,28 @@ const projects = {
     github:      "https://github.com/OrkoTheMage/orkos-todo-tool",
     liveUrl:     null,
     video:       null,
+    localVideo:  '/projects/orkos-todo-tool/demo.mp4',
     screenshots: [
       { src: '/projects/orkos-todo-tool/screenshot-1.png', alt: "Orko's Todo Tool screenshot 1" },
       { src: '/projects/orkos-todo-tool/screenshot-2.png', alt: "Orko's Todo Tool screenshot 2" },
       { src: '/projects/orkos-todo-tool/screenshot-3.png', alt: "Orko's Todo Tool screenshot 3" },
       { src: '/projects/orkos-todo-tool/screenshot-4.png', alt: "Orko's Todo Tool screenshot 4" },
+    ],
+  },
+
+  "cli-system-fetch": {
+    slug:        "cli-system-fetch",
+    name:        "CLI System Fetch",
+    tagline:     "A custom-coded API system for fetching and displaying system info",
+    description: "A fully custom implementation of the classic neofetch system info tool. Features a personalized ASCII logo, custom system information, and enhanced formatting options. Built from scratch to understand how these tools work under the hood.",
+    tags:        ["Python", "CLI", "ASCII", "neofetch"],
+    github:      "https://github.com/OrkoTheMage/cli-system-fetch",
+    liveUrl:     null,
+    localVideo:  '/projects/cli-system-fetch/demo.mp4',
+    screenshots: [
+      { src: '/projects/cli-system-fetch/screenshot-1.png', alt: "CLI System Fetch screenshot 1" },
+      { src: '/projects/cli-system-fetch/screenshot-2.png', alt: "CLI System Fetch screenshot 2" },
+      { src: '/projects/cli-system-fetch/screenshot-3.png', alt: "CLI System Fetch screenshot 3" },
     ],
   },
 }

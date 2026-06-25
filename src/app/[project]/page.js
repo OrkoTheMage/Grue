@@ -20,6 +20,7 @@ const PROJECT_TAG_COLORS = {
   'Local Storage': { bg: '#ff7043', color: '#fff' },
   'Markdown':      { bg: '#4a90d9', color: '#fff' },
   'LocalStorage':  { bg: '#ff7043', color: '#fff' },
+  'neofetch':      { bg: '#4a90d9', color: '#fff' },
 }
 
 const GAME_TAG_COLORS = {
@@ -159,7 +160,7 @@ export default async function ItemPage({ params }) {
 
         {/* Action buttons */}
         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-          {item.github && (
+          {item.github && slug !== 'cli-system-fetch' && (
             <a
               href={item.github}
               target="_blank"
@@ -249,7 +250,7 @@ export default async function ItemPage({ params }) {
             {item.localVideo ? (
               <ProjectVideo src={item.localVideo} type={item.localVideo.endsWith('.webm') ? 'video/webm' : 'video/mp4'} />
             ) : item.video ? (
-              <div style={{ borderRadius: '8px', overflow: 'hidden', maxWidth: '800px', aspectRatio: '16/9' }}>
+              <div style={{ borderRadius: '8px', overflow: 'hidden', maxWidth: '1200px', aspectRatio: '16/9' }}>
                 <iframe
                   src={item.video}
                   width="100%"
@@ -305,13 +306,13 @@ export default async function ItemPage({ params }) {
                 autoPlay
                 muted
                 loop
-                style={{ borderRadius: '8px', maxWidth: '800px', width: '100%' }}
+                style={{ borderRadius: '8px', maxWidth: '1200px', width: '100%' }}
               >
                 <source src={item.localVideo} type="video/webm" />
                 Your browser does not support the video tag.
               </video>
             ) : item.video ? (
-              <div style={{ borderRadius: '8px', overflow: 'hidden', maxWidth: '800px', aspectRatio: '16/9' }}>
+              <div style={{ borderRadius: '8px', overflow: 'hidden', maxWidth: '1200px', aspectRatio: '16/9' }}>
                 <iframe
                   src={item.video}
                   width="100%"
@@ -322,7 +323,7 @@ export default async function ItemPage({ params }) {
                 />
               </div>
             ) : (
-              <div className="content-placeholder" style={{ maxWidth: '800px', height: '360px' }}>
+              <div className="content-placeholder" style={{ maxWidth: '1200px', height: '450px' }}>
                 video coming soon
               </div>
             )}

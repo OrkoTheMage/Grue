@@ -244,7 +244,7 @@ export default function CLI() {
         case "v":
         case "--v":
         case "--version":
-          displayMsg("Grue.sh v1.1.2")
+          displayMsg("Grue.sh v1.1.3")
           break
 
         case "ps":
@@ -359,6 +359,7 @@ export default function CLI() {
                 "js-presenter":    `${base}/js-presenter`,
                 "cli-presenter":   `${base}/cli-presenter`,
                 "orkos-todo-tool": `${base}/orkos-todo-tool`,
+                "cli-system-fetch": `${base}/cli-system-fetch`,
               }
               const normalizedTarget = target.replace(/-/g, "")
               const matchedKey = Object.keys(projectUrls).find(
@@ -370,7 +371,7 @@ export default function CLI() {
                 })
               } else {
                 displayMsg(`No project found with the name "${args[0]}".`)
-                displayMsg("Available projects: js-presenter, cli-presenter, orkos-todo-tool")
+                displayMsg("Available projects: js-presenter, cli-presenter, orkos-todo-tool, cli-system-fetch")
               }
 
             } else if (currentDir === "/contact") {
