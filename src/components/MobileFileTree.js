@@ -40,7 +40,7 @@ export default function MobileFileTree() {
     "/contact": [
       { name: "GitHub", slug: "github", type: "link", url: "https://github.com/OrkoTheMage", description: "View my GitHub profile" },
       { name: "Resume", slug: "resume", type: "link", url: `${baseUrl}/resume`, description: "View my resume" },
-      { name: "contactinfo.md", type: "file", slug: "contactinfo.md", content: "Email: contact@grue.sh\nGitHub: github.com/OrkoTheMage" },
+      { name: "contactinfo.md", type: "file", slug: "contactinfo.md", content: "Email: aeryngrindle@gmail.com\nGitHub: github.com/OrkoTheMage" },
       { name: "return", type: "back", target: "/", slug: ".." },
     ],
   }

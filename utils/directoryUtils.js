@@ -6,7 +6,7 @@ const fileSystem = {
   '/': ['games', 'projects', 'contact'],
   '/games': ['in-between', 'sigil', 'venture'],
   '/contact': ['resume', 'github', 'contactinfo.md'],
-  '/projects': ['js-presenter', 'cli-presenter', 'orkos-todo-tool']
+  '/projects': ['js-presenter', 'cli-presenter', 'orkos-todo-tool', 'cli-system-fetch']
 }
 
 // Directories that can actually be navigated into with 'cd'
@@ -21,6 +21,7 @@ const fileContents = {
   '/projects/js-presenter': "A JavaScript-based presentation tool. Use 'open js-presenter' to view the project.",
   '/projects/cli-presenter': "A CLI-based presentation tool. Use 'open cli-presenter' to view the project.",
   '/projects/orkos-todo-tool': "A todo tool built by Orko. Use 'open orkos-todo-tool' to view the project.",
+  '/projects/cli-system-fetch': "A custom neofetch-style CLI tool with ASCII art. Use 'open cli-system-fetch' to view the project.",
 }
 
 const normalizeFileName = (filename) => {
