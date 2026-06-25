@@ -1,11 +1,15 @@
 "use client"
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import CRTAnimation from "./CRTAnimation"
 import projects from "../data/projects"
 import games from "../data/games"
 
 export default function MobileFileTree() {
   const [currentDir, setCurrentDir] = useState("/")
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [currentDir])
   const [selectedItem, setSelectedItem] = useState(null)
   const [showModal, setShowModal] = useState(false)
 
