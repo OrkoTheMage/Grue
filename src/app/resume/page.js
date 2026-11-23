@@ -28,10 +28,11 @@ export default function ResumePage() {
 
       {/* PDF iframe */}
       <iframe
-        src="https://drive.google.com/file/d/1hMx4fIxql8_8HXbCaEp7ZtpA4BRUiWxo/preview?usp=embed_googleplus"
+        src="https://drive.google.com/file/d/1RUb7drGO2No6hOZZQpOc8LyiLllscEFJ/preview?usp=embed_googleplus"
         style={{
           border: 'none',
           maxWidth: '1000px',
+          maxHeight: '80vh',
           width: '100%',
           aspectRatio: '8.5 / 11',
           height: 'auto',

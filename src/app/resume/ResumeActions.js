@@ -6,7 +6,7 @@ export default function ResumeActions() {
       {/* Action buttons */}
       <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
         <a
-          href="https://drive.google.com/uc?export=download&id=1hMx4fIxql8_8HXbCaEp7ZtpA4BRUiWxo"
+          href="https://drive.google.com/uc?export=download&id=1RUb7drGO2No6hOZZQpOc8LyiLllscEFJ"
           target="_blank"
           rel="noopener noreferrer"
           className="pixel-font-small resume-btn"
